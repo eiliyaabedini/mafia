@@ -650,7 +650,12 @@ class GameController(private val gateway: AiGateway, private val scope: Coroutin
             catch (e: CancellationException) { throw e }
             catch (e: Exception) {
                 if (generation == version) {
-                    if (e is AiResultRejected) game = game?.let { it.copy(usage = it.usage + e.usage) }
+                    val failedUsage = when (e) {
+                        is AiResultRejected -> e.usage
+                        is AiCallFailed -> e.usage
+                        else -> null
+                    }
+                    if (failedUsage != null) game = game?.let { it.copy(usage = it.usage + failedUsage) }
                     persist()
                     error = e.message ?: "REQUEST_FAILED"
                 }
@@ -728,6 +733,9 @@ class GameController(private val gateway: AiGateway, private val scope: Coroutin
                         throw e
                     } catch (e: Exception) {
                         if (generation == version) {
+                            if (e is AiCallFailed && e.usage != null) {
+                                game?.let { latest -> commitGame(latest.copy(usage = latest.usage + e.usage), announceEffects = false) }
+                            }
                             audioError = e.message ?: "AUDIO_FAILED"
                             audioPausedAfterError = true
                             // A failed clip pauses narration for this game, but

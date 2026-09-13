@@ -16,6 +16,7 @@ val MafiaJson = Json { ignoreUnknownKeys = true; isLenient = true; explicitNulls
 @Serializable data class PromptMessage(val role: String, val content: String)
 @Serializable data class CompletionResult(val content: String, val usage: AiUsage, val rejection: String? = null)
 class AiResultRejected(code: String, val usage: AiUsage) : IllegalStateException(code)
+class AiCallFailed(code: String, val usage: AiUsage?) : IllegalStateException(code)
 /** Only accepted public dialogue crosses the speech boundary, never an agent's context. */
 @Serializable data class NarrationRequest(val characterId: String, val text: String)
 /** Local bundled audio state. Reading it never loads AI Pass or spends wallet credit. */
@@ -141,7 +142,12 @@ class BrowserGateway(
                     val raw = poll(id)
                     if (raw != null) {
                         val response = MafiaJson.parseToJsonElement(raw).jsonObject
-                        response["error"]?.jsonPrimitive?.contentOrNull?.let { throw IllegalStateException(it) }
+                        response["error"]?.jsonPrimitive?.contentOrNull?.let { code ->
+                            val usage = response["usage"]?.let { runCatching {
+                                MafiaJson.decodeFromJsonElement<AiUsage>(it)
+                            }.getOrNull() }
+                            throw AiCallFailed(code, usage)
+                        }
                         result = response["data"] ?: JsonNull
                     } else delay(100)
                 }

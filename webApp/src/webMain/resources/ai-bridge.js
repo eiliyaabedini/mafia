@@ -255,6 +255,16 @@
     return Number.isFinite(cost) && cost >= 0 ? cost : null;
   }
 
+  function paidUsage(model, cost) {
+    return typeof model === 'string' ? {
+      model,
+      inputTokens: 0,
+      cachedInputTokens: 0,
+      outputTokens: 0,
+      estimatedCost: Number.isFinite(cost) && cost >= 0 ? cost : null,
+    } : null;
+  }
+
   async function readWalletStatus(entry, payload) {
     if (payload?.refresh !== true) return walletSessionSnapshot();
     try {
@@ -832,7 +842,7 @@
       : ['BALANCE', 'AUTH', 'NETWORK', 'TIMEOUT', 'RATE_LIMIT', 'SETUP_REQUIRED'].includes(mapped)
         ? mapped : 'AUDIO_FAILED';
     mediaError = code;
-    finish(entry, { error: code });
+    finish(entry, { error: code, ...(error?.mafiaUsage ? { usage: error.mafiaUsage } : {}) });
     entry.controller.abort();
   }
 
@@ -970,26 +980,32 @@
         responseFormat: 'mp3', speed: SPEECH_SPEED, signal, timeout: SPEECH_TIMEOUT,
       });
       estimatedCost = await paidCallCost(api, costBaseline);
+    } catch (error) {
+      try {
+        estimatedCost = await paidCallCost(api, costBaseline);
+        if (Number.isFinite(estimatedCost) && estimatedCost >= 0) error.mafiaUsage = paidUsage(speechModel, estimatedCost);
+      } catch (_) { /* The original speech error remains authoritative. */ }
+      throw error;
     } finally { refreshWalletAfterPaid(previousBalanceVersion); }
     if (!narrationCurrent(entry)) return null;
     if (!(blob instanceof Blob) || blob.size === 0 || blob.size > 5 * 1024 * 1024) throw new Error('AUDIO_FAILED');
-    let bytes = await blob.arrayBuffer();
-    blob = null;
-    if (!narrationCurrent(entry)) return null;
-    let buffer = await context.decodeAudioData(bytes);
-    bytes = null;
-    if (!narrationCurrent(entry)) return null;
-    if (!Number.isFinite(buffer.duration) || buffer.duration <= 0 || buffer.duration > 90) throw new Error('AUDIO_FAILED');
-    const playback = playBuffer(entry, context, buffer);
-    buffer = null;
-    await playback;
-    return {
-      model: speechModel,
-      inputTokens: 0,
-      cachedInputTokens: 0,
-      outputTokens: 0,
-      estimatedCost,
-    };
+    const usage = paidUsage(speechModel, estimatedCost);
+    try {
+      let bytes = await blob.arrayBuffer();
+      blob = null;
+      if (!narrationCurrent(entry)) return usage;
+      let buffer = await context.decodeAudioData(bytes);
+      bytes = null;
+      if (!narrationCurrent(entry)) return usage;
+      if (!Number.isFinite(buffer.duration) || buffer.duration <= 0 || buffer.duration > 90) throw new Error('AUDIO_FAILED');
+      const playback = playBuffer(entry, context, buffer);
+      buffer = null;
+      await playback;
+      return usage;
+    } catch (error) {
+      error.mafiaUsage = usage;
+      throw error;
+    }
   }
 
   async function tutorialPlay(entry, payload) {
@@ -1157,6 +1173,13 @@
         });
         if (!costBaseline && entry.loginCostBaseline) costBaseline = await entry.loginCostBaseline;
         balanceCost = await paidCallCost(api, costBaseline);
+      } catch (error) {
+        try {
+          if (!costBaseline && entry.loginCostBaseline) costBaseline = await entry.loginCostBaseline;
+          balanceCost = await paidCallCost(api, costBaseline);
+          if (Number.isFinite(balanceCost) && balanceCost >= 0) error.mafiaUsage = paidUsage(payload.model, balanceCost);
+        } catch (_) { /* The original completion error remains authoritative. */ }
+        throw error;
       } finally { refreshWalletAfterPaid(previousBalanceVersion); }
       assertCurrent(entry);
       const choice = response.choices?.[0];
@@ -1201,7 +1224,8 @@
         return perform(entry, op, JSON.parse(raw));
       }).then(data => finish(entry, { data }))
         .catch(e => ['narrate', 'tutorialPlay'].includes(op) ? audioError(entry, e)
-          : finish(entry, op === 'effect' ? { data: null } : { error: errorCode(e) }));
+          : finish(entry, op === 'effect' ? { data: null }
+            : { error: errorCode(e), ...(e?.mafiaUsage ? { usage: e.mafiaUsage } : {}) }));
       // Compose dispatches a tap from its canvas before some mobile browsers
       // synthesize the final DOM click. If the SDK inserts its modal in that
       // same event turn, the synthetic click lands on the new backdrop and
