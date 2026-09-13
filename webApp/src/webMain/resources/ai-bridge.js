@@ -1174,8 +1174,8 @@
         inputTokens: tokenCount(usage.prompt_tokens),
         cachedInputTokens: Math.min(tokenCount(usage.prompt_tokens), tokenCount(usage.prompt_tokens_details?.cached_tokens)),
         outputTokens: tokenCount(usage.completion_tokens),
-        estimatedCost: typeof usage.cost === 'number' && Number.isFinite(usage.cost) && usage.cost >= 0
-          ? usage.cost : balanceCost,
+        estimatedCost: balanceCost ?? (typeof usage.cost === 'number' && Number.isFinite(usage.cost) && usage.cost >= 0
+          ? usage.cost : null),
       }};
     } finally {
       if (activeCompletion === entry) activeCompletion = null;
