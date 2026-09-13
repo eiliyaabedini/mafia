@@ -236,6 +236,25 @@
     }
   }
 
+  async function paidCallBaseline(api) {
+    if (!walletSnapshot.balance || walletSnapshot.stale) await refreshWalletSnapshot(api);
+    const remaining = Number(walletSnapshot.balance?.remainingUsd);
+    return Number.isFinite(remaining) ? { remaining, version: walletBalanceVersion } : null;
+  }
+
+  async function paidCallCost(api, baseline) {
+    if (!baseline) return null;
+    // Current SDK releases await their own balance refresh. Keep this fallback
+    // for hosts that disabled automatic refresh or missed its balance event.
+    if (walletBalanceVersion === baseline.version) await refreshWalletSnapshot(api);
+    const remaining = Number(walletSnapshot.balance?.remainingUsd);
+    if (!Number.isFinite(remaining)) return null;
+    const cost = baseline.remaining - remaining;
+    // A simultaneous top-up or activity in another tab cannot be attributed to
+    // this request. In that case leave the amount unknown instead of inventing it.
+    return Number.isFinite(cost) && cost >= 0 ? cost : null;
+  }
+
   async function readWalletStatus(entry, payload) {
     if (payload?.refresh !== true) return walletSessionSnapshot();
     try {
@@ -305,7 +324,10 @@
         if (!res.ok) throw new Error('SETUP_REQUIRED');
         const config = await res.json();
         if (typeof config.clientId !== 'string' || !config.clientId.trim()) throw new Error('SETUP_REQUIRED');
-        api.initialize({ clientId: config.clientId.trim(), scopes: ['api:access'], darkMode: true });
+        api.initialize({
+          clientId: config.clientId.trim(), scopes: ['api:access'], darkMode: true,
+          language: 'fa',
+        });
       } finally { clearTimeout(timer); }
     })().catch(e => { setupPromise = null; throw e; });
     await setupPromise;
@@ -938,13 +960,16 @@
     if (!narrationCurrent(entry)) return null;
     // Only this already-accepted public speech is sent; no prompts, roles,
     // private reasoning, game history, or character profile enter TTS.
+    const costBaseline = await paidCallBaseline(api);
     const previousBalanceVersion = walletBalanceVersion;
     let blob;
+    let estimatedCost = null;
     try {
       blob = await api.generateSpeech({
         text: payload.text.trim(), model: speechModel, voice: VOICES[payload.characterId],
         responseFormat: 'mp3', speed: SPEECH_SPEED, signal, timeout: SPEECH_TIMEOUT,
       });
+      estimatedCost = await paidCallCost(api, costBaseline);
     } finally { refreshWalletAfterPaid(previousBalanceVersion); }
     if (!narrationCurrent(entry)) return null;
     if (!(blob instanceof Blob) || blob.size === 0 || blob.size > 5 * 1024 * 1024) throw new Error('AUDIO_FAILED');
@@ -958,7 +983,13 @@
     const playback = playBuffer(entry, context, buffer);
     buffer = null;
     await playback;
-    return null;
+    return {
+      model: speechModel,
+      inputTokens: 0,
+      cachedInputTokens: 0,
+      outputTokens: 0,
+      estimatedCost,
+    };
   }
 
   async function tutorialPlay(entry, payload) {
@@ -1095,7 +1126,12 @@
         armTimeout(entry, AUTH_TIMEOUT);
         // Do not inspect event.detail: the SDK owns all authentication material.
         entry.onLogin = () => {
-          if (current(entry)) armTimeout(entry, COMPLETION_TIMEOUT);
+          if (current(entry)) {
+            armTimeout(entry, COMPLETION_TIMEOUT);
+            // Capture the newly connected wallet before the SDK submits the
+            // first paid turn, so that call is included in the game total too.
+            entry.loginCostBaseline = paidCallBaseline(api).catch(() => null);
+          }
         };
         document.addEventListener('aipass:login', entry.onLogin, { once: true });
       }
@@ -1108,8 +1144,10 @@
       assertCurrent(entry);
       // No application retries. The SDK may refresh authentication once on 401,
       // but network errors, timeouts, 5xx and malformed responses stop this move.
+      let costBaseline = await paidCallBaseline(api);
       const previousBalanceVersion = walletBalanceVersion;
       let response;
+      let balanceCost = null;
       try {
         response = await api.generateCompletion({
           model: payload.model, messages: payload.messages, maxTokens,
@@ -1117,6 +1155,8 @@
             : deepseekModel ? { reasoning_effort: 'low' } : {}),
           stream: false, signal, timeout: COMPLETION_TIMEOUT,
         });
+        if (!costBaseline && entry.loginCostBaseline) costBaseline = await entry.loginCostBaseline;
+        balanceCost = await paidCallCost(api, costBaseline);
       } finally { refreshWalletAfterPaid(previousBalanceVersion); }
       assertCurrent(entry);
       const choice = response.choices?.[0];
@@ -1134,7 +1174,8 @@
         inputTokens: tokenCount(usage.prompt_tokens),
         cachedInputTokens: Math.min(tokenCount(usage.prompt_tokens), tokenCount(usage.prompt_tokens_details?.cached_tokens)),
         outputTokens: tokenCount(usage.completion_tokens),
-        estimatedCost: typeof usage.cost === 'number' && Number.isFinite(usage.cost) && usage.cost >= 0 ? usage.cost : null,
+        estimatedCost: typeof usage.cost === 'number' && Number.isFinite(usage.cost) && usage.cost >= 0
+          ? usage.cost : balanceCost,
       }};
     } finally {
       if (activeCompletion === entry) activeCompletion = null;
@@ -1149,7 +1190,7 @@
     start(op, raw) {
       if (op === 'tutorialPlay') { stopTutorial(); stopNarration(); }
       const entry = { id: ++sequence, op, result: null, controller: new AbortController(), timer: null,
-        onLogin: null, onAudioGesture: null, audioEpoch, tutorialEpoch, effectsEpoch,
+        onLogin: null, loginCostBaseline: null, onAudioGesture: null, audioEpoch, tutorialEpoch, effectsEpoch,
         effectsCreatedAt: performance.now(), releaseAudio: null };
       pending.set(entry.id, entry);
       if (op !== 'tutorialPlay') armTimeout(entry, op === 'narrate' ? NARRATION_TIMEOUT

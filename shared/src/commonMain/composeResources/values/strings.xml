@@ -70,6 +70,7 @@
     <string name="you_lost">این بار تیم تو شکست خورد.</string>
     <string name="reveal_all">حالا می‌شود به همهٔ رازها نگاه کرد.</string>
     <string name="play_again">یک دست دیگر</string>
+    <string name="game_total_cost">هزینهٔ این بازی: %1$s</string>
     <string name="back_lobby">برگشت به میز</string>
     <string name="leave">خروج</string>
     <string name="leave_title">از این بازی خارج می‌شوی؟</string>

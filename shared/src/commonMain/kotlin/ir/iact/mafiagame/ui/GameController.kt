@@ -720,7 +720,9 @@ class GameController(private val gateway: AiGateway, private val scope: Coroutin
                 if (publicSpeech != null && audioPreferenceReady && audioEnabled && !audioPausedAfterError && audioVolume > 0f && !paused) {
                     narratingPlayerId = actor.id
                     try {
-                        gateway.narrate(NarrationRequest(actor.character.id, publicSpeech))
+                        gateway.narrate(NarrationRequest(actor.character.id, publicSpeech))?.let { usage ->
+                            game?.let { latest -> commitGame(latest.copy(usage = latest.usage + usage), announceEffects = false) }
+                        }
                         narrationPlayed = true
                     } catch (e: CancellationException) {
                         throw e

@@ -67,7 +67,7 @@ interface AiGateway {
     suspend fun complete(request: CompletionRequest): CompletionResult
     /** Opens the provider-owned account/connect surface and returns its latest known state. */
     suspend fun openWallet(): WalletStatus = WalletStatus()
-    suspend fun narrate(request: NarrationRequest) = Unit
+    suspend fun narrate(request: NarrationRequest): AiUsage? = null
     fun setAudioEnabled(enabled: Boolean) = Unit
     fun setAudioVolume(volume: Float) = Unit
     fun stopAudio() = Unit
@@ -154,9 +154,10 @@ class BrowserGateway(
         MafiaJson.decodeFromJsonElement(call("complete", MafiaJson.encodeToString(CompletionRequest.serializer(), request)))
     override suspend fun openWallet(): WalletStatus =
         MafiaJson.decodeFromJsonElement(call("walletOpen"))
-    override suspend fun narrate(request: NarrationRequest) {
-        call("narrate", MafiaJson.encodeToString(NarrationRequest.serializer(), request))
-    }
+    override suspend fun narrate(request: NarrationRequest): AiUsage? =
+        call("narrate", MafiaJson.encodeToString(NarrationRequest.serializer(), request)).let {
+            if (it == JsonNull) null else MafiaJson.decodeFromJsonElement(it)
+        }
     override fun setAudioEnabled(enabled: Boolean) { audioControl("enable", if (enabled) 1.0 else 0.0) }
     override fun setAudioVolume(volume: Float) { audioControl("volume", volume.toDouble()) }
     override fun stopAudio() { audioControl("stop", 0.0) }

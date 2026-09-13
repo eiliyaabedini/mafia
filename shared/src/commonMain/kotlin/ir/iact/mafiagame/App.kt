@@ -1110,6 +1110,8 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
 }
 @Composable private fun Results(game: Game, lobby: () -> Unit) {
     val won = (game.human.role == Role.MAFIA) == (game.winner == Team.MAFIA)
+    val totalCost = game.usage.takeIf { it.isNotEmpty() && it.all { usage -> usage.estimatedCost != null } }
+        ?.sumOf { requireNotNull(it.estimatedCost) }
     LazyColumn(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp), contentPadding = PaddingValues(vertical = 24.dp)) {
         item { Image(painterResource(Res.drawable.icon), null, Modifier.size(100.dp).clip(RoundedCornerShape(22.dp))) }
         item { FText(tr(if (game.winner == Team.TOWN) Res.string.town_wins else Res.string.mafia_wins), size = 31, color = if (game.winner == Team.TOWN) Gold else Crimson, weight = FontWeight.Bold, align = TextAlign.Center) }
@@ -1122,6 +1124,14 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
                 FText(roleName(player.role), color = if (player.role == Role.MAFIA) Crimson else Gold)
             }
         }
-        item { GoldButton(tr(Res.string.play_again), lobby) }
+        item {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                GoldButton(tr(Res.string.play_again), lobby)
+                totalCost?.let { cost ->
+                    val amount = "\u2066${gameCostAmount(cost)}\u2069"
+                    FText("\u202B${tr(Res.string.game_total_cost, amount)}\u202C", size = 11, color = Muted)
+                }
+            }
+        }
     }
 }
