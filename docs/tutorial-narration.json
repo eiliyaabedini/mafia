@@ -1,0 +1,507 @@
+{
+  "schemaVersion": 1,
+  "language": "fa-IR",
+  "voiceDirection": {
+    "character": "Warm, mature, patient Persian teacher; conversational Iranian Persian.",
+    "delivery": "Calm and clear, natural pauses, no theatrical character impressions, no spoken English labels.",
+    "quotes": "The narrator introduces each speaker; characters in game examples read their own lines with distinct male and female voices.",
+    "generation": "Speak clip.segments in order when present; otherwise speak clip.text. Metadata is not narration."
+  },
+  "clipCount": 41,
+  "spokenCharacters": 6817,
+  "characterCountMethod": "Unicode code points in segment text when segments exist, otherwise clip text; includes whitespace, punctuation, and Persian zero-width non-joiners.",
+  "clips": [
+    {
+      "id": "basic_welcome",
+      "text": "سلام، به آموزش مافیای هوش مصنوعی خوش اومدی. مافیا یک بازی گروهی و نقش‌مخفیه که از دههٔ هزار و نهصد و هشتاد میلادی شروع شد و بعد در دورهمی‌های سراسر دنیا محبوب شد. بازیکن‌ها با حرف زدن، شک کردن و رأی دادن دنبال مافیا می‌گردن. لازم نیست چیزی بلد باشی؛ چند کارت کوتاه رو با هم جلو می‌ریم و بعد آمادهٔ بازی هستی.",
+      "kind": "basic",
+      "track": "basics",
+      "contentId": "welcome",
+      "sourceResources": [
+        "tutorial_basic_welcome_title",
+        "tutorial_basic_welcome_body"
+      ]
+    },
+    {
+      "id": "basic_citizen",
+      "text": "اینجا هفت نفریم: دو مافیا و پنج عضو شهر. مافیا خودش رو شهروند جا می‌زنه و شهر باید پیداش کنه. نقش تو توی بازی تصادفیه؛ اما توی این تمرین شهروندی: گوش بده، سؤال بپرس و رأی بده.",
+      "kind": "basic",
+      "track": "basics",
+      "contentId": "citizen",
+      "sourceResources": [
+        "tutorial_basic_citizen_body"
+      ]
+    },
+    {
+      "id": "basic_roles",
+      "text": "نقش‌ها این‌طور کار می‌کنن. سه شهروند عادی فقط روز حرف می‌زنن و رأی می‌دن. دو مافیا همدیگه رو می‌شناسن و شب یک عضو شهر رو هدف می‌گیرن. پزشک هر شب از یک نفر زنده، حتی خودش، محافظت می‌کنه. کارآگاه یک نفر دیگه رو بررسی می‌کنه و فقط خودش جواب «مافیا» یا «عضو شهر» رو می‌بینه.",
+      "kind": "basic",
+      "track": "basics",
+      "contentId": "roles",
+      "sourceResources": [
+        "tutorial_basic_roles_body"
+      ]
+    },
+    {
+      "id": "basic_cycle",
+      "text": "روز دو دور حرف می‌زنیم. بعد تصویر هر نفر میاد: برای دفاع بیاد؟ بله یا نه. می‌تونی به چند نفر یا هیچ‌کس رأی بدی. حداکثر دو نفر دفاع می‌کنن؛ اگر تساوی سه نفر یا بیشتر رو بالا نگه داره، کسی دفاع نمی‌کنه و شب می‌شه. بعد از دفاع یک رأی نهایی می‌دی، یا رأی نمی‌دی.",
+      "kind": "basic",
+      "track": "basics",
+      "contentId": "cycle",
+      "sourceResources": [
+        "tutorial_basic_cycle_body"
+      ]
+    },
+    {
+      "id": "basic_night",
+      "text": "شب همه‌چیز پنهانی و به ترتیب انجام می‌شه. اول مافیاهای زنده یک عضو شهر رو برای کشتن انتخاب می‌کنن. بعد پزشک یک نفر زنده رو برای محافظت انتخاب می‌کنه. آخر کارآگاه یک نفر دیگه رو بررسی می‌کنه و خصوصی می‌فهمه مافیاست یا عضو شهر. اگر پزشک همون هدف مافیا رو انتخاب کرده باشه، صبح کسی نمی‌میره؛ وگرنه یک نفر کشته می‌شه.",
+      "kind": "basic",
+      "track": "basics",
+      "contentId": "night",
+      "sourceResources": [
+        "tutorial_basic_night_title",
+        "tutorial_basic_night_body"
+      ]
+    },
+    {
+      "id": "basic_outcomes",
+      "text": "کسی که به‌تنهایی بیشترین رأی رو بگیره حذف می‌شه؛ اگر بیشترین رأی مساوی باشه، هیچ‌کس حذف نمی‌شه. نقش حذف‌شده‌ها تا پایان پنهونه. شهر با حذف همهٔ مافیا می‌بره؛ مافیا وقتی می‌بره که تعداد مافیای زنده، برابر یا بیشتر از بقیهٔ زنده‌ها باشه.",
+      "kind": "basic",
+      "track": "basics",
+      "contentId": "outcomes",
+      "sourceResources": [
+        "tutorial_basic_outcomes_body"
+      ]
+    },
+    {
+      "id": "practice_listen_intro",
+      "text": "روز اوله، هر هفت نفر زنده‌ان و تو شهروندی. سارا می‌گه: من هنوز به کسی شک ندارم. شهاب می‌گه: سارا گفت به آرمان شک دارد. آرمان هم می‌گه: من شنیدم گفت هنوز به کسی شک ندارد. حالا به نظرت، کدوم حرف ارزش پرسیدن داره؟",
+      "segments": [
+        { "speaker": "narrator", "voice": "Charon", "text": "روز اوله، هر هفت نفر زنده‌ان و تو شهروندی. سارا می‌گه:" },
+        { "speaker": "sara", "voice": "Kore", "text": "من هنوز به کسی شک ندارم." },
+        { "speaker": "narrator", "voice": "Charon", "text": "شهاب می‌گه:" },
+        { "speaker": "shahab", "voice": "Iapetus", "text": "سارا گفت به آرمان شک دارد." },
+        { "speaker": "narrator", "voice": "Charon", "text": "آرمان هم می‌گه:" },
+        { "speaker": "arman", "voice": "Orus", "text": "من شنیدم گفت هنوز به کسی شک ندارد." },
+        { "speaker": "narrator", "voice": "Charon", "text": "حالا به نظرت، کدوم حرف ارزش پرسیدن داره؟" }
+      ],
+      "kind": "intro",
+      "track": "practice",
+      "contentId": "listen",
+      "sourceResources": [
+        "tutorial_practice_listen_prompt",
+        "tutorial_practice_listen_sara",
+        "tutorial_practice_listen_reza",
+        "tutorial_practice_listen_arman"
+      ]
+    },
+    {
+      "id": "practice_listen_feedback_0",
+      "text": "خوب دقت کردی؛ حرفی که شهاب از سارا نقل می‌کنه با جملهٔ سارا فرق داره. شاید اشتباه شنیده باشه؛ هنوز نقش کسی معلوم نیست. این اختلاف یک سرنخه، نه اثبات نقش.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "listen",
+      "choiceIndex": 0,
+      "sourceResources": [
+        "tutorial_practice_listen_feedback_mismatch",
+        "tutorial_practice_listen_takeaway"
+      ]
+    },
+    {
+      "id": "practice_listen_feedback_1",
+      "text": "ممکنه شهاب اشتباه شنیده باشه. تناقض ارزش بررسی داره، اما به‌تنهایی ثابت نمی‌کنه که شهاب مافیاست.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "listen",
+      "choiceIndex": 1,
+      "sourceResources": [
+        "tutorial_practice_listen_feedback_mafia",
+        "tutorial_practice_listen_takeaway"
+      ]
+    },
+    {
+      "id": "practice_listen_feedback_2",
+      "text": "آرمان جمله رو درست نقل کرده، اما همین یک کار شهروند بودنش رو ثابت نمی‌کنه. برای شناخت نقش‌ها، به سرنخ‌های بیشتری نیاز داریم.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "listen",
+      "choiceIndex": 2,
+      "sourceResources": [
+        "tutorial_practice_listen_feedback_town",
+        "tutorial_practice_listen_takeaway"
+      ]
+    },
+    {
+      "id": "practice_question_intro",
+      "text": "نوبت توئه؛ می‌خوای اختلاف حرف شهاب و سارا رو روشن کنی. از همه می‌خوای به شهاب رأی بدن، از شهاب می‌پرسی کدوم جملهٔ سارا رو می‌گه، یا می‌گی من کارآگاهم و شهاب مافیاست؟ گزینه‌ها رو ببین؛ کدوم جمله کمک بیشتری می‌کنه؟",
+      "kind": "intro",
+      "track": "practice",
+      "contentId": "question",
+      "sourceResources": [
+        "tutorial_practice_question_prompt",
+        "tutorial_practice_question_choice_accuse",
+        "tutorial_practice_question_choice_ask",
+        "tutorial_practice_question_choice_claim"
+      ]
+    },
+    {
+      "id": "practice_question_feedback_0",
+      "text": "هنوز جواب شهاب رو نشنیدیم. بهتره اول دلیل بخوایم و بعد دربارهٔ رأی تصمیم بگیریم.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "question",
+      "choiceIndex": 0,
+      "sourceResources": [
+        "tutorial_practice_question_feedback_accuse",
+        "tutorial_practice_question_takeaway"
+      ]
+    },
+    {
+      "id": "practice_question_feedback_1",
+      "text": "این سؤال مشخص به شهاب فرصت توضیح می‌ده. بعد، جوابش رو هم کنار حرف‌های قبلی بسنج؛ سؤال خوب کمک می‌کنه روشن‌تر تصمیم بگیری.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "question",
+      "choiceIndex": 1,
+      "sourceResources": [
+        "tutorial_practice_question_feedback_ask",
+        "tutorial_practice_question_takeaway"
+      ]
+    },
+    {
+      "id": "practice_question_feedback_2",
+      "text": "تو توی این تمرین شهروندی و نتیجهٔ بررسی نداری. پس این ادعا پشتوانه نداره و ممکنه اعتماد جمع رو کم کنه.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "question",
+      "choiceIndex": 2,
+      "sourceResources": [
+        "tutorial_practice_question_feedback_claim",
+        "tutorial_practice_question_takeaway"
+      ]
+    },
+    {
+      "id": "practice_vote_intro",
+      "text": "شهاب و سارا در رأی اول بیشترین رأی رو آوردن و هر دو دفاع کردن. حالا رأی نهایی تموم شده: شهاب سه رأی داره، سارا هم سه رأی، و یک نفر رأی نداده. به نظرت حالا چی می‌شه؟",
+      "kind": "intro",
+      "track": "practice",
+      "contentId": "vote",
+      "sourceResources": [
+        "tutorial_practice_vote_prompt"
+      ]
+    },
+    {
+      "id": "practice_vote_feedback_0",
+      "text": "شک تو مهمه، ولی حذف با نتیجهٔ رأی تعیین می‌شه. شهاب و سارا در بیشترین رأی برابرن؛ پس کسی حذف نمی‌شه. رأی اول می‌تونه به چند نفر باشه؛ رأی نهایی به یک نفر یا هیچ‌کس. هر دو دور عمومی‌ان. اگر کسی رأیش عوض شد، دلیلش رو بپرس.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "vote",
+      "choiceIndex": 0,
+      "sourceResources": [
+        "tutorial_practice_vote_feedback_reza",
+        "tutorial_practice_vote_takeaway"
+      ]
+    },
+    {
+      "id": "practice_vote_feedback_1",
+      "text": "در این میز، تساوی باعث حذف دو نفر نمی‌شه. وقتی بیشترین رأی مساویه، هیچ‌کس حذف نمی‌شه. رأی اول می‌تونه به چند نفر باشه؛ رأی نهایی به یک نفر یا هیچ‌کس. هر دو دور عمومی‌ان.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "vote",
+      "choiceIndex": 1,
+      "sourceResources": [
+        "tutorial_practice_vote_feedback_both",
+        "tutorial_practice_vote_takeaway"
+      ]
+    },
+    {
+      "id": "practice_vote_feedback_2",
+      "text": "درسته؛ شهاب و سارا در بیشترین رأی برابرن، پس هر هفت نفر به شب می‌رسن. رأی اول می‌تونه به چند نفر باشه؛ رأی نهایی به یک نفر یا هیچ‌کس. هر دو دور عمومی‌ان. اگر کسی رأیش عوض شد، دلیلش رو بپرس.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "vote",
+      "choiceIndex": 2,
+      "sourceResources": [
+        "tutorial_practice_vote_feedback_tie",
+        "tutorial_practice_vote_takeaway"
+      ]
+    },
+    {
+      "id": "practice_night_intro",
+      "text": "همون هفت نفر به شب می‌رسن؛ تو شهروندی و انتخاب شبانه نداری. صبح اعلام می‌شه: «کسی کشته نشد». از این خبر چه چیزی می‌فهمی؟ یکی از گزینه‌ها رو انتخاب کن.",
+      "kind": "intro",
+      "track": "practice",
+      "contentId": "night",
+      "sourceResources": [
+        "tutorial_practice_night_prompt"
+      ]
+    },
+    {
+      "id": "practice_night_feedback_0",
+      "text": "در خبر صبح هیچ اسمی نبود؛ نمی‌دونیم پزشک چه کسی رو انتخاب کرده. اگه پزشک همون قربانی مافیا رو انتخاب کنه، کسی نمی‌میره؛ ولی اسم پزشک و فرد نجات‌یافته اعلام نمی‌شه.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "night",
+      "choiceIndex": 0,
+      "sourceResources": [
+        "tutorial_practice_night_feedback_sara",
+        "tutorial_practice_night_takeaway"
+      ]
+    },
+    {
+      "id": "practice_night_feedback_1",
+      "text": "درسته؛ این خبر نقش کسی رو ثابت نمی‌کنه. اگه پزشک همون قربانی مافیا رو انتخاب کنه، کسی نمی‌میره؛ ولی اسم پزشک و فرد نجات‌یافته اعلام نمی‌شه.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "night",
+      "choiceIndex": 1,
+      "sourceResources": [
+        "tutorial_practice_night_feedback_alive",
+        "tutorial_practice_night_takeaway"
+      ]
+    },
+    {
+      "id": "practice_night_feedback_2",
+      "text": "کشته نشدن یعنی هر هفت نفر هنوز توی بازی‌ان؛ مافیا هم هنوز در جمعه. اگر پزشک همون قربانی مافیا رو انتخاب کرده باشه، کسی نمی‌میره؛ این خبر هویت کسی رو روشن نمی‌کنه.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "night",
+      "choiceIndex": 2,
+      "sourceResources": [
+        "tutorial_practice_night_feedback_mafia",
+        "tutorial_practice_night_takeaway"
+      ]
+    },
+    {
+      "id": "practice_finish_intro",
+      "text": "حالا فقط یک پایان فرضی رو بررسی می‌کنیم؛ اینجا بازی کامل اجرا نشده. اگه در ادامه همهٔ مافیا حذف بشن، چه کسی برنده می‌شه؟ گزینه‌ها رو ببین و انتخاب کن.",
+      "kind": "intro",
+      "track": "practice",
+      "contentId": "finish",
+      "sourceResources": [
+        "tutorial_practice_finish_prompt"
+      ]
+    },
+    {
+      "id": "practice_finish_feedback_0",
+      "text": "بله، برد گروهیه؛ شهروند، پزشک و کارآگاه با حذف همهٔ مافیا برنده‌ان، حتی اگه خودت حذف شده باشی. برعکس، اگر دو مافیا و دو عضو شهر زنده بمونن، مافیا برنده می‌شه.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "finish",
+      "choiceIndex": 0,
+      "sourceResources": [
+        "tutorial_practice_finish_feedback_team",
+        "tutorial_practice_finish_takeaway"
+      ]
+    },
+    {
+      "id": "practice_finish_feedback_1",
+      "text": "لازم نیست خودت زنده مونده باشی؛ اگر شهر ببره، تو هم با گروهت می‌بری. برای نمونه، نبودن هیچ مافیای زنده یعنی برد شهر؛ دو مافیای زنده در برابر دو عضو شهر یعنی برد مافیا.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "finish",
+      "choiceIndex": 1,
+      "sourceResources": [
+        "tutorial_practice_finish_feedback_alive",
+        "tutorial_practice_finish_takeaway"
+      ]
+    },
+    {
+      "id": "practice_finish_feedback_2",
+      "text": "لازم نیست اول همهٔ نقش‌ها رو حدس بزنی. حذف همهٔ مافیا برای برد شهر کافیه؛ نقش‌ها بعد از پایان بازی رو می‌شن. اگر دو مافیا و دو عضو شهر زنده بمونن، این بار مافیا برنده می‌شه.",
+      "kind": "feedback",
+      "track": "practice",
+      "contentId": "finish",
+      "choiceIndex": 2,
+      "sourceResources": [
+        "tutorial_practice_finish_feedback_guess",
+        "tutorial_practice_finish_takeaway"
+      ]
+    },
+    {
+      "id": "strategy_evidence_intro",
+      "text": "این یک صحنهٔ جداست و تو شهروندی. آرمان می‌گه: مینا خیلی کم حرف زد؛ حتماً مافیاست. مینا جواب می‌ده: هنوز دارم حرف‌ها را کنار هم می‌گذارم. تو در جواب این حرف‌ها، کدوم واکنش رو سنجیده‌تر می‌دونی؟",
+      "segments": [
+        { "speaker": "narrator", "voice": "Charon", "text": "این یک صحنهٔ جداست و تو شهروندی. حرف آرمان و جواب مینا رو بشنو:" },
+        { "speaker": "arman", "voice": "Orus", "text": "مینا خیلی کم حرف زد؛ حتماً مافیاست." },
+        { "speaker": "mina", "voice": "Aoede", "text": "هنوز دارم حرف‌ها را کنار هم می‌گذارم." },
+        { "speaker": "narrator", "voice": "Charon", "text": "تو در جواب این حرف‌ها، کدوم واکنش رو سنجیده‌تر می‌دونی؟" }
+      ],
+      "kind": "intro",
+      "track": "strategy",
+      "contentId": "evidence",
+      "sourceResources": [
+        "tutorial_strategy_evidence_prompt",
+        "tutorial_strategy_evidence_arman",
+        "tutorial_strategy_evidence_mina"
+      ]
+    },
+    {
+      "id": "strategy_evidence_feedback_0",
+      "text": "کم‌حرفی می‌تونه علت‌های مختلفی داشته باشه. از مینا سؤال کن تا چیزی برای سنجیدن داشته باشی؛ سکوت به‌تنهایی مدرک مافیا بودن نیست.",
+      "kind": "feedback",
+      "track": "strategy",
+      "contentId": "evidence",
+      "choiceIndex": 0,
+      "sourceResources": [
+        "tutorial_strategy_evidence_feedback_silence",
+        "tutorial_strategy_evidence_takeaway"
+      ]
+    },
+    {
+      "id": "strategy_evidence_feedback_1",
+      "text": "در این موقعیت، سؤال مشخص از برچسب زدن مفیدتره. جواب مینا یک سرنخ تازه می‌ده، نه اثبات نقش؛ اون رو کنار حرف‌ها و رأی‌های قبلی بسنج.",
+      "kind": "feedback",
+      "track": "strategy",
+      "contentId": "evidence",
+      "choiceIndex": 1,
+      "sourceResources": [
+        "tutorial_strategy_evidence_feedback_ask",
+        "tutorial_strategy_evidence_takeaway"
+      ]
+    },
+    {
+      "id": "strategy_evidence_feedback_2",
+      "text": "دلیل ضعیف آرمان رو نقد کن، اما از همون اشتباه، نقش قطعی نساز. یک شهروند هم ممکنه بد قضاوت کنه.",
+      "kind": "feedback",
+      "track": "strategy",
+      "contentId": "evidence",
+      "choiceIndex": 2,
+      "sourceResources": [
+        "tutorial_strategy_evidence_feedback_arman",
+        "tutorial_strategy_evidence_takeaway"
+      ]
+    },
+    {
+      "id": "strategy_detective_intro",
+      "text": "در این صحنهٔ جدا، تو کارآگاهی و نتیجهٔ خصوصی شب می‌گه شهاب مافیاست؛ کسی هم نقش تو رو نمی‌دونه. سر میز به مینا شک دارن، ولی تو دربارهٔ مینا نتیجه‌ای نداری. قبل از حرف زدن، کدوم فکر رو بهتر می‌دونی؟",
+      "kind": "intro",
+      "track": "strategy",
+      "contentId": "detective",
+      "sourceResources": [
+        "tutorial_strategy_detective_prompt"
+      ]
+    },
+    {
+      "id": "strategy_detective_feedback_0",
+      "text": "حتی اگه پزشک زنده باشه، نمی‌دونی چه کسی رو انتخاب می‌کنه. نجات تو تضمین نیست؛ پس گفتن نتیجه رو بی‌خطر فرض نکن.",
+      "kind": "feedback",
+      "track": "strategy",
+      "contentId": "detective",
+      "choiceIndex": 0,
+      "sourceResources": [
+        "tutorial_strategy_detective_feedback_doctor",
+        "tutorial_strategy_detective_takeaway"
+      ]
+    },
+    {
+      "id": "strategy_detective_feedback_1",
+      "text": "این نتیجه فقط برای خودته. بقیه باید ادعای تو رو با رفتار و شواهد عمومی بسنجن؛ کارآگاه بودن تو هنوز برای اون‌ها ثابت نشده.",
+      "kind": "feedback",
+      "track": "strategy",
+      "contentId": "detective",
+      "choiceIndex": 1,
+      "sourceResources": [
+        "tutorial_strategy_detective_feedback_public",
+        "tutorial_strategy_detective_takeaway"
+      ]
+    },
+    {
+      "id": "strategy_detective_feedback_2",
+      "text": "درسته، باید هر دو طرف رو بسنجی؛ گاهی گفتن نتیجه ارزش این خطر رو داره، اما زمانش به وضعیت میز بستگی داره. نتیجه برای خودت قطعیه؛ کارآگاه بودن تو برای بقیه هنوز یک ادعاست.",
+      "kind": "feedback",
+      "track": "strategy",
+      "contentId": "detective",
+      "choiceIndex": 2,
+      "sourceResources": [
+        "tutorial_strategy_detective_feedback_risk",
+        "tutorial_strategy_detective_takeaway"
+      ]
+    },
+    {
+      "id": "strategy_teammate_intro",
+      "text": "در این صحنهٔ جدا، تو مافیایی و خصوصی می‌دونی سارا هم‌تیمی توئه. سارا اول می‌گه: من هنوز به کسی شک ندارم. بعد می‌گه: از اول به شهاب شک داشتم. آرمان می‌پرسه: این دو حرف با هم جور نیست؛ منظورت چیست؟ حالا تو کدوم واکنش رو سنجیده‌تر می‌دونی؟",
+      "segments": [
+        { "speaker": "narrator", "voice": "Charon", "text": "در این صحنهٔ جدا، تو مافیایی و خصوصی می‌دونی سارا هم‌تیمی توئه. دو جملهٔ سارا و بعد پرسش آرمان رو بشنو:" },
+        { "speaker": "sara", "voice": "Kore", "text": "من هنوز به کسی شک ندارم. از اول به شهاب شک داشتم." },
+        { "speaker": "arman", "voice": "Orus", "text": "این دو حرف با هم جور نیست؛ منظورت چیست؟" },
+        { "speaker": "narrator", "voice": "Charon", "text": "حالا تو کدوم واکنش رو سنجیده‌تر می‌دونی؟" }
+      ],
+      "kind": "intro",
+      "track": "strategy",
+      "contentId": "teammate",
+      "sourceResources": [
+        "tutorial_strategy_teammate_prompt",
+        "tutorial_strategy_teammate_sara_before",
+        "tutorial_strategy_teammate_sara_after",
+        "tutorial_strategy_teammate_arman"
+      ]
+    },
+    {
+      "id": "strategy_teammate_feedback_0",
+      "text": "در این صحنه، سؤال دربارهٔ همون تناقض طبیعی‌تر از دفاع بی‌دلیله. البته حملهٔ نمایشی به هم‌تیمی هم همیشه جواب نمی‌ده؛ واکنشت باید با گفت‌وگو جور باشه.",
+      "kind": "feedback",
+      "track": "strategy",
+      "contentId": "teammate",
+      "choiceIndex": 0,
+      "sourceResources": [
+        "tutorial_strategy_teammate_feedback_ask",
+        "tutorial_strategy_teammate_takeaway"
+      ]
+    },
+    {
+      "id": "strategy_teammate_feedback_1",
+      "text": "دفاع خودکار می‌تونه ارتباط تو و سارا رو پررنگ کنه. به حرف مشخص واکنش نشون بده، نه فقط به هم‌تیمی بودنش؛ هیچ حرکت همیشه‌برنده‌ای وجود نداره.",
+      "kind": "feedback",
+      "track": "strategy",
+      "contentId": "teammate",
+      "choiceIndex": 1,
+      "sourceResources": [
+        "tutorial_strategy_teammate_feedback_defend",
+        "tutorial_strategy_teammate_takeaway"
+      ]
+    },
+    {
+      "id": "strategy_teammate_feedback_2",
+      "text": "این حرف ممکنه نقش هر دوی شما رو لو بده و به ضرر گروهتون باشه. شناخت هم‌تیمی اطلاعات خصوصی توئه؛ دفاع یا مخالفتت رو با جریان گفت‌وگو بسنج.",
+      "kind": "feedback",
+      "track": "strategy",
+      "contentId": "teammate",
+      "choiceIndex": 2,
+      "sourceResources": [
+        "tutorial_strategy_teammate_feedback_reveal",
+        "tutorial_strategy_teammate_takeaway"
+      ]
+    },
+    {
+      "id": "complete_basics",
+      "text": "حالا قواعد میز رو بلدی. بیا چند تصمیم رو توی یک بازی تمرینی امتحان کنیم؛ بدون عجله.",
+      "kind": "completion",
+      "track": "basics",
+      "sourceResources": [
+        "tutorial_basics_complete_title",
+        "tutorial_basics_complete_body"
+      ]
+    },
+    {
+      "id": "complete_practice",
+      "text": "اولین تمرینت تموم شد و برای یک بازی واقعی آماده‌ای. لازم نیست جواب همه‌چیز رو بدونی؛ یک سؤال خوب از حدس قطعی ارزشمندتره.",
+      "kind": "completion",
+      "track": "practice",
+      "sourceResources": [
+        "tutorial_practice_complete_title",
+        "tutorial_practice_complete_body"
+      ]
+    },
+    {
+      "id": "complete_strategy",
+      "text": "بازیکن خوب لازم نیست همیشه مطمئن باشه. حرف‌ها رو مقایسه کن، احتمال‌های دیگه رو هم در نظر بگیر و اگه دلیل تازه‌ای دیدی، نظرت رو عوض کن. بقیهٔ داستان سر میز شکل می‌گیره.",
+      "kind": "completion",
+      "track": "strategy",
+      "sourceResources": [
+        "tutorial_strategy_complete_title",
+        "tutorial_strategy_complete_body"
+      ]
+    }
+  ]
+}

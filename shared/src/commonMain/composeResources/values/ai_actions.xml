@@ -1,0 +1,6 @@
+<resources>
+    <string name="error_action_format">پاسخ هم‌بازی به شکل انتخاب بازیکن نبود. انتخاب‌های ثبت‌شده و نوبت فعلی حفظ شده‌اند.</string>
+    <string name="error_action_target">هم‌بازی هدف مجاز انتخاب نکرد. نوبت فعلی حفظ شده؛ می‌توانی دوباره درخواست کنی.</string>
+    <string name="error_action_truncated">پاسخ مدل قبل از کامل‌شدن قطع شد. نوبت فعلی حفظ شده است.</string>
+    <string name="error_action_empty">مدل پاسخ قابل‌استفاده‌ای نفرستاد. نوبت فعلی حفظ شده است.</string>
+</resources>

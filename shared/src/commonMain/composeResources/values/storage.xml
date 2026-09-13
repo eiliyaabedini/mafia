@@ -1,0 +1,19 @@
+<resources>
+    <string name="storage_title">ذخیره و پشتیبان</string>
+    <string name="storage_local_note">بازی، اسم، یادداشت‌ها و تنظیمات صدا خودکار روی همین دستگاه ذخیره می‌شوند.</string>
+    <string name="storage_local_failed">ذخیره روی دستگاه انجام نشد. پیش از بستن صفحه از بازی پشتیبان بگیر.</string>
+    <string name="storage_backup_note">برای داشتن یک نسخهٔ اضافه، از ذخیرهٔ فعلی در فضای خصوصی ای‌آی‌پس پشتیبان بگیر.</string>
+    <string name="storage_backup">پشتیبان‌گیری در ای‌آی‌پس</string>
+    <string name="storage_working">در حال انجام…</string>
+    <string name="storage_restore">برگرداندن پشتیبان ای‌آی‌پس</string>
+    <string name="storage_restore_note">این گزینه ذخیرهٔ محلی را با آخرین پشتیبان جایگزین می‌کند. بازی خودکار شروع نمی‌شود.</string>
+    <string name="storage_saved">پشتیبان ذخیره شد.</string>
+    <string name="storage_restored">پشتیبان برگشت. برای ادامه به میز برگرد.</string>
+    <string name="storage_empty">هنوز پشتیبانی در این حساب نداری.</string>
+    <string name="storage_conflict">پشتیبان در جای دیگری تغییر کرده؛ دوباره تلاش کن.</string>
+    <string name="storage_invalid">این ذخیره با نسخهٔ بازی سازگار نیست. ذخیرهٔ محلی دست‌نخورده ماند.</string>
+    <string name="storage_failed">ارتباط با پشتیبان انجام نشد. ذخیرهٔ محلی را نگه داشتیم.</string>
+    <string name="storage_resume">ادامهٔ بازی ذخیره‌شده · روز %1$s</string>
+    <string name="storage_last_result">دیدن نتیجهٔ آخرین بازی</string>
+    <string name="storage_new_game">شروع بازی تازه</string>
+</resources>

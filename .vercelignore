@@ -1,0 +1,24 @@
+# Use the validated prebuilt output; never upload the repository as source.
+/*
+!/.vercel/
+/.vercel/*
+!/.vercel/output/
+/.vercel/output/*
+!/.vercel/output/config.json
+!/.vercel/output/static/
+!/.vercel/output/static/**
+# Defense in depth if an output file is added outside the packaging script.
+**/.env*
+**/.aipass/**
+**/.git/**
+**/.gradle/**
+**/.kotlin/**
+**/local.properties
+**/project-grant.json
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*.jks
+**/*.keystore
+**/*.map

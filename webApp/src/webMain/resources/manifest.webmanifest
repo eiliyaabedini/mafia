@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "مافیای هوش مصنوعی",
+  "short_name": "مافیای هوش مصنوعی",
+  "description": "مافیا را کنار شخصیت‌های هوش مصنوعی بازی کن.",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10100f",
+  "theme_color": "#10100f",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

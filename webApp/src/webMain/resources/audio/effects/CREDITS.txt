@@ -1,0 +1,19 @@
+AI Mafia — short game sound effects
+
+daybreak.mp3
+Excerpt of “Medium rooster crowing” by alys / PDSounds, 6 May 2008.
+Released into the public domain worldwide by the author.
+https://commons.wikimedia.org/wiki/File:Medium_rooster_crowing.ogg
+Changes: excerpt 2.45–5.95 s, filtering, fades, level adjustment, MP3 conversion.
+
+nightfall.mp3
+Excerpt of “Barred Owl, Yellowstone National Park” by the National Park Service,
+14 July 2006. U.S. federal government recording, public domain in the USA.
+https://commons.wikimedia.org/wiki/File:Barred_Owl,_Yellowstone_National_Park.oga
+Changes: first 4.7 s, filtering, fades, level adjustment, MP3 conversion.
+
+game_start, vote_open, vote_tied, eliminated, night_killed, night_saved,
+town_win, mafia_win:
+Original AI Mafia cue compositions, rendered locally with the macOS system
+instrument sampler. No film recordings, external melodies, or hosted AI calls.
+Reproduction scripts: scripts/create-effects.swift and scripts/create-effects.py.

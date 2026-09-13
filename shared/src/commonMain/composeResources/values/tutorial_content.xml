@@ -1,0 +1,102 @@
+<resources>
+    <string name="tutorial_basic_welcome_title">خوش آمدی به میز مافیا</string>
+    <string name="tutorial_basic_welcome_body">مافیا یک بازی گفت‌وگویی و نقش‌مخفی است که از دههٔ ۱۹۸۰ میلادی شروع شد و بعد در دورهمی‌های سراسر دنیا محبوب شد. بازیکن‌ها با حرف زدن، شک کردن و رأی دادن مافیا را پیدا می‌کنند. این آموزش کوتاه قدم‌به‌قدم همراهت است.</string>
+    <string name="tutorial_basic_citizen_title">مافیا را پیدا کن</string>
+    <string name="tutorial_basic_citizen_body">۷ نفریم: ۲ مافیا و ۵ عضو شهر. مافیا خودش را شهروند جا می‌زند؛ شهر باید پیدایش کند. نقش تو تصادفی است. در تمرین شهروندی: گوش بده، سؤال بپرس و رأی بده.</string>
+    <string name="tutorial_basic_roles_title">هر نقش چه می‌کند؟</string>
+    <string name="tutorial_basic_roles_body">۳ شهروند عادی فقط روز حرف می‌زنند و رأی می‌دهند. ۲ مافیا همدیگر را می‌شناسند و شب یک عضو شهر را هدف می‌گیرند. پزشک هر شب از یک نفر زنده، حتی خودش، محافظت می‌کند. کارآگاه یک نفر دیگر را بررسی می‌کند و فقط خودش جواب «مافیا» یا «عضو شهر» را می‌بیند.</string>
+    <string name="tutorial_basic_cycle_title">روز: حرف، دفاع و رأی</string>
+    <string name="tutorial_basic_cycle_body">روز دو دور حرف می‌زنیم. بعد تصویر هر نفر می‌آید: برای دفاع بیاید؟ بله یا نه. می‌توانی به چند نفر یا هیچ‌کس رأی بدهی. حداکثر دو نفر دفاع می‌کنند؛ اگر تساوی سه نفر یا بیشتر را بالا نگه دارد، کسی دفاع نمی‌کند و شب می‌شود. بعد از دفاع یک رأی نهایی می‌دهی، یا رأی نمی‌دهی.</string>
+    <string name="tutorial_basic_night_title">شب: سه نوبت پنهانی</string>
+    <string name="tutorial_basic_night_body">شب همه‌چیز پنهانی و به این ترتیب انجام می‌شود: اول مافیاهای زنده یک عضو شهر را برای کشتن انتخاب می‌کنند. بعد پزشک یک نفر زنده را برای محافظت انتخاب می‌کند. آخر کارآگاه یک نفر دیگر را بررسی می‌کند. اگر پزشک همان هدف مافیا را انتخاب کرده باشد، صبح کسی نمی‌میرد؛ وگرنه یک نفر کشته می‌شود. جواب بررسی فقط به خود کارآگاه نشان داده می‌شود.</string>
+    <string name="tutorial_basic_outcomes_title">حذف شدن و برنده شدن</string>
+    <string name="tutorial_basic_outcomes_body">بیشترین رأی نهایی یک نفر را حذف می‌کند؛ تساوی یا رأی ندادن همه یعنی هیچ‌کس نمی‌رود. رأی اول فقط برای دفاع است. نقش حذف‌شده تا پایان پنهان است. شهر با حذف همهٔ مافیا می‌برد؛ مافیا وقتی تعدادش به بقیهٔ زنده‌ها برسد.</string>
+
+    <string name="tutorial_practice_listen_title">۱. به حرف‌ها گوش کن</string>
+    <string name="tutorial_practice_listen_prompt">روز اول است؛ هر ۷ نفر زنده‌اند و تو شهروندی. چه چیزی ارزش پرسیدن دارد؟</string>
+    <string name="tutorial_practice_listen_sara">من هنوز به کسی شک ندارم.</string>
+    <string name="tutorial_practice_listen_reza">سارا گفت به آرمان شک دارد.</string>
+    <string name="tutorial_practice_listen_arman">من شنیدم گفت هنوز به کسی شک ندارد.</string>
+    <string name="tutorial_practice_listen_choice_mismatch">حرف شهاب با جملهٔ سارا جور نیست.</string>
+    <string name="tutorial_practice_listen_feedback_mismatch">خوب دیدی؛ نقل شهاب با حرف سارا فرق دارد. شاید اشتباه شنیده باشد؛ هنوز نقش کسی معلوم نیست.</string>
+    <string name="tutorial_practice_listen_choice_mafia">شهاب حتماً مافیاست.</string>
+    <string name="tutorial_practice_listen_feedback_mafia">ممکن است شهاب اشتباه شنیده باشد. تناقض ارزش بررسی دارد، اما نقش او را ثابت نمی‌کند.</string>
+    <string name="tutorial_practice_listen_choice_town">آرمان حتماً شهروند است.</string>
+    <string name="tutorial_practice_listen_feedback_town">آرمان جمله را درست نقل کرده؛ همین یک کار، شهروند بودنش را ثابت نمی‌کند.</string>
+    <string name="tutorial_practice_listen_takeaway">اختلاف حرف‌ها یک سرنخ است، نه اثبات نقش.</string>
+
+    <string name="tutorial_practice_question_title">۲. یک سؤال روشن بپرس</string>
+    <string name="tutorial_practice_question_prompt">نوبت توست. کدام جمله بیشتر به روشن شدن اختلاف حرف شهاب و سارا کمک می‌کند؟</string>
+    <string name="tutorial_practice_question_choice_accuse">همه به شهاب رأی بدهید!</string>
+    <string name="tutorial_practice_question_feedback_accuse">هنوز پاسخ شهاب را نشنیده‌ایم. بهتر است اول دلیل بخواهیم و بعد دربارهٔ رأی تصمیم بگیریم.</string>
+    <string name="tutorial_practice_question_choice_ask">شهاب، کدام جملهٔ سارا را می‌گویی؟</string>
+    <string name="tutorial_practice_question_feedback_ask">این سؤال مشخص به شهاب فرصت توضیح می‌دهد. پاسخش را هم کنار حرف‌های قبلی بسنج.</string>
+    <string name="tutorial_practice_question_choice_claim">من کارآگاهم؛ شهاب مافیاست!</string>
+    <string name="tutorial_practice_question_feedback_claim">تو اینجا شهروندی و نتیجهٔ بررسی نداری. این ادعا پشتوانه ندارد و ممکن است اعتماد جمع را کم کند.</string>
+    <string name="tutorial_practice_question_takeaway">ساده بگو: به این حرف شک دارم؛ دلیلش چیست؟</string>
+
+    <string name="tutorial_practice_vote_title">۳. نتیجهٔ رأی را بخوان</string>
+    <string name="tutorial_practice_vote_prompt">شهاب و سارا در رأی اول بیشترین رأی را آوردند و هر دو دفاع کردند. حالا رأی نهایی تمام شده: شهاب ۳، سارا ۳ و یک نفر رأی نداده. چه می‌شود؟</string>
+    <string name="tutorial_practice_vote_choice_reza">شهاب می‌رود؛ من به او شک دارم.</string>
+    <string name="tutorial_practice_vote_feedback_reza">شک تو مهم است، اما حذف با نتیجهٔ رأی تعیین می‌شود. شهاب و سارا در بیشترین رأی برابرند.</string>
+    <string name="tutorial_practice_vote_choice_both">شهاب و سارا هر دو می‌روند.</string>
+    <string name="tutorial_practice_vote_feedback_both">در این میز، تساوی باعث حذف دو نفر نمی‌شود. وقتی بیشترین رأی برابر است، کسی حذف نمی‌شود.</string>
+    <string name="tutorial_practice_vote_choice_tie">کسی حذف نمی‌شود.</string>
+    <string name="tutorial_practice_vote_feedback_tie">درست است؛ رأیِ بیشترین نفرها مساوی شده. هر ۷ نفر به شب می‌رسند.</string>
+    <string name="tutorial_practice_vote_takeaway">رأی اول می‌تواند به چند نفر باشد؛ رأی نهایی به یک نفر یا هیچ‌کس. رأی‌های هر دو دور عمومی‌اند. اگر کسی رأیش عوض شد، دلیلش را بپرس.</string>
+
+    <string name="tutorial_practice_night_title">۴. صبح چه فهمیدیم؟</string>
+    <string name="tutorial_practice_night_prompt">همان ۷ نفر به شب می‌رسند. تو شهروندی و انتخاب شبانه نداری. صبح می‌شنوی: «کسی کشته نشد.» کدام برداشت درست است؟</string>
+    <string name="tutorial_practice_night_choice_sara">پزشک حتماً سارا را نجات داده.</string>
+    <string name="tutorial_practice_night_feedback_sara">در خبر صبح هیچ نامی نبود. نمی‌دانیم پزشک چه کسی را انتخاب کرده بود.</string>
+    <string name="tutorial_practice_night_choice_alive">کسی کم نشده؛ نقش کسی هم ثابت نشده.</string>
+    <string name="tutorial_practice_night_feedback_alive">درست است. انتخاب‌های شب خصوصی‌اند؛ این خبر هویت پزشک یا فرد نجات‌یافته را نشان نمی‌دهد.</string>
+    <string name="tutorial_practice_night_choice_mafia">پس همهٔ مافیا حذف شده‌اند.</string>
+    <string name="tutorial_practice_night_feedback_mafia">کشته نشدن یعنی هر ۷ نفر هنوز در بازی‌اند؛ مافیا هم همچنان در جمع است.</string>
+    <string name="tutorial_practice_night_takeaway">اگر پزشک همان قربانی مافیا را انتخاب کند، کسی نمی‌میرد. نام پزشک و فرد نجات‌یافته اعلام نمی‌شود.</string>
+
+    <string name="tutorial_practice_finish_title">۵. بردِ گروهت را بشناس</string>
+    <string name="tutorial_practice_finish_prompt">حالا فقط پایان‌های فرضی را تمرین می‌کنیم؛ بازی کامل اجرا نشده. اگر در ادامه همهٔ مافیا حذف شوند، چه کسی می‌برد؟</string>
+    <string name="tutorial_practice_finish_choice_team">شهر؛ حتی اگر من حذف شده باشم.</string>
+    <string name="tutorial_practice_finish_feedback_team">برد گروهی است. شهروند، پزشک و کارآگاه با حذف همهٔ مافیا برنده‌اند.</string>
+    <string name="tutorial_practice_finish_choice_alive">فقط کسانی که زنده مانده‌اند.</string>
+    <string name="tutorial_practice_finish_feedback_alive">زنده ماندن شرط بردِ گروه تو نیست. اگر شهر ببرد، تو هم با شهرت می‌بری؛ حتی اگر حذف شده باشی.</string>
+    <string name="tutorial_practice_finish_choice_guess">باید اول همهٔ نقش‌ها را حدس بزنیم.</string>
+    <string name="tutorial_practice_finish_feedback_guess">حدس زدن همهٔ نقش‌ها شرط برد نیست. حذف همهٔ مافیا کافی است؛ نقش‌ها پس از پایان بازی رو می‌شوند.</string>
+    <string name="tutorial_practice_finish_takeaway">نمونهٔ برد مافیا: ۲ مافیا و ۲ عضو شهر باقی بمانند. نمونهٔ برد شهر: هیچ مافیایی باقی نماند.</string>
+
+    <string name="tutorial_strategy_evidence_title">شک، مدرک نیست</string>
+    <string name="tutorial_strategy_evidence_prompt">یک صحنهٔ جدا: تو شهروندی. جواب سنجیده‌تر به این حرف‌ها چیست؟</string>
+    <string name="tutorial_strategy_evidence_arman">مینا خیلی کم حرف زد؛ حتماً مافیاست.</string>
+    <string name="tutorial_strategy_evidence_mina">هنوز دارم حرف‌ها را کنار هم می‌گذارم.</string>
+    <string name="tutorial_strategy_evidence_choice_silence">با آرمان موافقم؛ سکوت یعنی مافیا.</string>
+    <string name="tutorial_strategy_evidence_feedback_silence">کم‌حرفی علت‌های مختلفی دارد. از مینا سؤال کن تا چیزی برای سنجیدن داشته باشی.</string>
+    <string name="tutorial_strategy_evidence_choice_ask">مینا، دربارهٔ کدام حرف هنوز سؤال داری؟</string>
+    <string name="tutorial_strategy_evidence_feedback_ask">در این موقعیت، سؤال مشخص مفیدتر از برچسب زدن است. پاسخ مینا سرنخ تازه می‌دهد، نه اثبات نقش.</string>
+    <string name="tutorial_strategy_evidence_choice_arman">آرمان تهمت زد، پس خودش مافیاست.</string>
+    <string name="tutorial_strategy_evidence_feedback_arman">دلیل ضعیف آرمان را نقد کن، اما از همان اشتباه نقش قطعی نساز. یک شهروند هم ممکن است بد قضاوت کند.</string>
+    <string name="tutorial_strategy_evidence_takeaway">لحن، سکوت و اعتمادبه‌نفس را کنار حرف‌ها و رأی‌های قبلی بسنج؛ به‌تنهایی مدرک نیستند.</string>
+
+    <string name="tutorial_strategy_detective_title">نتیجه‌ای که فقط تو می‌دانی</string>
+    <string name="tutorial_strategy_detective_prompt">صحنه‌ای جدا: تو کارآگاهی. نتیجهٔ خصوصی شب می‌گوید شهاب مافیاست؛ کسی نقش تو را نمی‌داند. در گفت‌وگو به مینا شک دارند، اما تو دربارهٔ او نتیجه‌ای نداری. پیش از حرف زدن، کدام فکر بهتر است؟</string>
+    <string name="tutorial_strategy_detective_choice_doctor">پزشک حتماً مرا نجات می‌دهد؛ گفتنش بی‌خطر است.</string>
+    <string name="tutorial_strategy_detective_feedback_doctor">حتی اگر پزشک زنده باشد، انتخابش را نمی‌دانی. نجات تو تضمین نیست.</string>
+    <string name="tutorial_strategy_detective_choice_public">نتیجهٔ من برای همه خودکار روشن شده.</string>
+    <string name="tutorial_strategy_detective_feedback_public">این نتیجه فقط برای توست. بقیه باید ادعایت را با رفتار و شواهد عمومی بسنجند.</string>
+    <string name="tutorial_strategy_detective_choice_risk">گفتن نتیجه به شهر کمک می‌کند، ولی ممکن است شب هدف شوم.</string>
+    <string name="tutorial_strategy_detective_feedback_risk">هر دو طرف را بسنج. گاهی گفتن نتیجه ارزش این خطر را دارد؛ زمانش به وضعیت میز بستگی دارد.</string>
+    <string name="tutorial_strategy_detective_takeaway">نتیجهٔ بررسی برای کارآگاه قطعی است؛ کارآگاه بودنِ گوینده برای بقیه هنوز یک ادعاست.</string>
+
+    <string name="tutorial_strategy_teammate_title">هم‌تیمی، نه دفاع همیشگی</string>
+    <string name="tutorial_strategy_teammate_prompt">صحنه‌ای جدا: این بار مافیایی و سارا هم‌تیمی توست؛ این را خصوصی می‌دانی. حرف‌های او را به ترتیب می‌خوانی. کدام واکنش سنجیده‌تر است؟</string>
+    <string name="tutorial_strategy_teammate_sara_before">من هنوز به کسی شک ندارم.</string>
+    <string name="tutorial_strategy_teammate_sara_after">از اول به شهاب شک داشتم.</string>
+    <string name="tutorial_strategy_teammate_arman">این دو حرف با هم جور نیست؛ منظورت چیست؟</string>
+    <string name="tutorial_strategy_teammate_choice_ask">سارا، این دو جمله را چطور توضیح می‌دهی؟</string>
+    <string name="tutorial_strategy_teammate_feedback_ask">در این صحنه، سؤال دربارهٔ همان تناقض طبیعی‌تر از دفاع بی‌دلیل است. البته حملهٔ نمایشی هم همیشه جواب نمی‌دهد.</string>
+    <string name="tutorial_strategy_teammate_choice_defend">هرچه سارا گفت تأیید کنم.</string>
+    <string name="tutorial_strategy_teammate_feedback_defend">دفاع خودکار می‌تواند ارتباط شما را پررنگ کند. به حرف مشخص واکنش نشان بده، نه فقط به هم‌تیمی بودنش.</string>
+    <string name="tutorial_strategy_teammate_choice_reveal">بگویم سارا هم‌تیمی مافیای من است.</string>
+    <string name="tutorial_strategy_teammate_feedback_reveal">این حرف ممکن است نقش هر دوی شما را لو بدهد و به ضرر گروهتان باشد. شناخت هم‌تیمی اطلاعات خصوصی توست.</string>
+    <string name="tutorial_strategy_teammate_takeaway">دفاع یا مخالفت باید با جریان گفت‌وگو جور باشد. هیچ حرکت همیشه‌برنده‌ای وجود ندارد.</string>
+</resources>

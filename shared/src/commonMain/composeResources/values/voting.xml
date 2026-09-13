@@ -1,0 +1,32 @@
+<resources>
+    <string name="nomination_title">رأی اول · چه کسی دفاع کند؟</string>
+    <string name="nomination_help">برای هر نفر بله یا نه بزن؛ می‌توانی به چند نفر یا هیچ‌کس رأی بدهی. به خودت رأی نمی‌دهی.</string>
+    <string name="nomination_progress">کارت %1$s از %2$s</string>
+    <string name="nomination_question">%1$s برای دفاع بیاید؟</string>
+    <string name="nomination_yes_button">بله، رأی می‌دهم</string>
+    <string name="nomination_no_button">نه، رأی نمی‌دهم</string>
+    <string name="nomination_voter">نوبت رأی %1$s است…</string>
+    <string name="nomination_tally">%1$s رأی موافق · %2$s از %3$s نفر رأی داده‌اند</string>
+    <string name="nomination_yes_label">بله · دفاع کند</string>
+    <string name="nomination_no_label">نه · رأی نداد</string>
+    <string name="nomination_pending">در انتظار نوبت</string>
+    <string name="nomination_show_history">رأی کارت‌های قبلی را ببین</string>
+    <string name="nomination_hide_history">بستن رأی کارت‌های قبلی</string>
+    <string name="nomination_previous">%1$s · %2$s رأی موافق</string>
+    <string name="defense_title">فرصت دفاع</string>
+    <string name="defense_now">نوبت دفاع %1$s است؛ بعد از دفاع‌ها دوباره رأی می‌دهیم.</string>
+    <string name="defense_your_turn">وقت دفاع توست. به اتهام مشخص جواب بده و دلیل رأی‌هایت را بگو.</string>
+    <string name="final_vote_title">رأی نهایی · بعد از دفاع</string>
+    <string name="final_vote_help">فقط به یکی از نامزدهای دفاع رأی بده، یا رأی نده. بیشترین رأی نهاییِ یکتا حذف می‌کند؛ تساوی یا رأی ندادن همه یعنی هیچ‌کس حذف نمی‌شود.</string>
+    <string name="final_abstain_button">این بار به هیچ‌کس رأی نمی‌دهم</string>
+    <string name="nomination_started_event">رأی اول شروع شد. هر نفر می‌تواند به چند نفر یا هیچ‌کس رأی بدهد. حداکثر دو نفر دفاع می‌کنند؛ تساویِ سه‌نفره بازی را مستقیم به شب می‌برد.</string>
+    <string name="nomination_yes_event">رأی اول: %1$s به دفاع آمدن %2$s رأی داد.</string>
+    <string name="nomination_no_event">رأی اول: %1$s به دفاع آمدن %2$s رأی نداد.</string>
+    <string name="defense_started_event">%1$s برای دفاع انتخاب شد. هنوز کسی حذف نشده است.</string>
+    <string name="final_started_event">دفاع‌ها تمام شد. حالا هر نفر یک رأی نهایی دارد، یا می‌تواند رأی ندهد.</string>
+    <string name="final_vote_event">رأی نهایی: %1$s به حذف %2$s رأی داد.</string>
+    <string name="final_abstain_event">رأی نهایی: %1$s به هیچ‌کس رأی نداد.</string>
+    <string name="no_elimination_event">هیچ رأی موافقی ثبت نشد؛ امروز کسی حذف نمی‌شود.</string>
+    <string name="nomination_show_discussion">حرف‌های امروز را مرور کن</string>
+    <string name="nomination_hide_discussion">بستن مرور گفت‌وگو</string>
+</resources>

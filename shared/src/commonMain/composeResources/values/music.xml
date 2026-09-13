@@ -1,0 +1,19 @@
+<resources>
+    <string name="music_audio_settings">صدا و موسیقی</string>
+    <string name="music_title">موسیقی پس‌زمینه</string>
+    <string name="music_enable">روشن‌کردن موسیقی پس‌زمینه</string>
+    <string name="music_off">خاموش است؛ هر وقت خواستی روشنش کن.</string>
+    <string name="music_ready">موسیقی پس‌زمینه در حال پخش است.</string>
+    <string name="music_pending">روشن است؛ در انتظار شروع پخش.</string>
+    <string name="music_standby">روشن است؛ فعلاً در سکوت منتظر می‌ماند.</string>
+    <string name="music_stopped">پخش متوقف شده؛ می‌توانی دوباره امتحان کنی.</string>
+    <string name="music_zero_volume">بلندی موسیقی روی صفر است.</string>
+    <string name="music_paused">با ادامهٔ بازی، موسیقی هم برمی‌گردد.</string>
+    <string name="music_volume">بلندی موسیقی</string>
+    <string name="music_unavailable">موسیقی پس‌زمینه در این نسخه در دسترس نیست.</string>
+    <string name="music_blocked">مرورگر هنوز اجازهٔ پخش نداده. برای شنیدن موسیقی، پخش دوباره را بزن.</string>
+    <string name="music_failed">موسیقی پخش نشد. می‌توانی دوباره امتحان کنی؛ بازی و صدای هم‌بازی‌ها مستقل‌اند.</string>
+    <string name="music_retry">پخش دوباره</string>
+    <string name="music_speech_on">گفتار روشن</string>
+    <string name="music_speech_off">گفتار خاموش</string>
+</resources>

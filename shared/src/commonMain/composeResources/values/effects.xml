@@ -1,0 +1,10 @@
+<resources>
+    <string name="effects_title">جلوه‌های صوتی</string>
+    <string name="effects_enable">روشن‌کردن جلوه‌های صوتی بازی</string>
+    <string name="effects_description">صداهای کوتاه برای روز، شب، رأی‌گیری و پایان بازی.</string>
+    <string name="effects_volume">بلندی جلوه‌های صوتی</string>
+    <string name="effects_unavailable">جلوه‌های صوتی در این نسخه در دسترس نیستند.</string>
+    <string name="discussion_order_title">ترتیب گفت‌وگوی امروز</string>
+    <string name="discussion_order_note">ترتیب هر روز تصادفی است؛ در هر دو دور همان ترتیب را داریم.</string>
+    <string name="discussion_your_order">نوبت امروزِ تو: %1$s از %2$s · ترتیب تصادفی</string>
+</resources>

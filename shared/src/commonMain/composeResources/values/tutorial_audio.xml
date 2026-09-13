@@ -1,0 +1,17 @@
+<resources>
+    <string name="tutorial_audio_menu">صدا</string>
+    <string name="tutorial_back_short">بازگشت</string>
+    <string name="tutorial_audio_playing">راهنما دارد این بخش را می‌خواند</string>
+    <string name="tutorial_audio_loading">آماده‌سازی صدای راهنما…</string>
+    <string name="tutorial_audio_muted">صدای راهنما خاموش است</string>
+    <string name="tutorial_audio_zero_volume">بلندی گفتار روی صفر است</string>
+    <string name="tutorial_audio_unavailable">صدای راهنما در دسترس نیست</string>
+    <string name="tutorial_audio_failed">این بخش پخش نشد؛ دوباره امتحان کن</string>
+    <string name="tutorial_audio_replay">دوباره بخوان</string>
+    <string name="tutorial_audio_retry">پخش دوباره</string>
+    <string name="tutorial_audio_stop">توقف</string>
+    <string name="narration_title">صدای راهنما و هم‌بازی‌ها</string>
+    <string name="narration_ready">روشن است؛ بلندی صدا را خودت تنظیم کن.</string>
+    <string name="narration_muted">خاموش است؛ هر وقت خواستی روشنش کن.</string>
+    <string name="narration_game_paused">خواندن حرف‌های بازی متوقف شده؛ پایین‌تر دوباره فعالش کن.</string>
+</resources>

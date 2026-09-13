@@ -1,0 +1,8 @@
+<resources>
+    <string name="learn_game">آموزش</string>
+    <string name="welcome_title">مافیا بلدی؟</string>
+    <string name="welcome_body">اولین باره؟ با چند کارت تصویری و یک دست تمرینی، با هم یاد می‌گیریم.</string>
+    <string name="welcome_learn">از صفر یادم بده</string>
+    <string name="welcome_skip">بازی رو بلدم</string>
+    <string name="wallet_title">اعتبار ای‌آی‌پس</string>
+</resources>

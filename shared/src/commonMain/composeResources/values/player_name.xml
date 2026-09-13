@@ -1,0 +1,12 @@
+<resources>
+    <string name="player_name_title">با چه اسمی صدایت کنیم؟</string>
+    <string name="player_name_body">هم‌بازی‌ها با همین اسم با تو حرف می‌زنند، از تو سؤال می‌پرسند و شاید به تو شک کنند!</string>
+    <string name="player_name_label">اسم تو</string>
+    <string name="player_name_hint">۲ تا ۲۴ حرف؛ اسمی متفاوت از هم‌بازی‌ها انتخاب کن.</string>
+    <string name="player_name_saved_note">اسمت در همین مرورگر می‌ماند تا دفعهٔ بعد دوباره واردش نکنی.</string>
+    <string name="player_name_save">ثبت اسم و ادامه</string>
+    <string name="player_name_current">%1$s · تغییر اسم</string>
+    <string name="target_selected">انتخاب شد</string>
+    <string name="target_select">انتخاب %1$s</string>
+    <string name="target_swipe_hint">برای دیدن همهٔ هم‌بازی‌ها، کارت‌ها را به دو طرف بکش.</string>
+</resources>
