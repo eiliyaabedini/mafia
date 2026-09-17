@@ -7,7 +7,11 @@ object GameEngine {
     const val ABSTAIN = "abstain"
     const val DISCUSSION_PASSES = 2
     const val MAX_SPEECH_CHARS = 420
-    private val roles = listOf(Role.MAFIA, Role.MAFIA, Role.DETECTIVE, Role.DOCTOR, Role.CITIZEN, Role.CITIZEN, Role.CITIZEN)
+    private val roles = listOf(Role.GODFATHER, Role.MAFIA, Role.DETECTIVE, Role.DOCTOR, Role.CITIZEN, Role.CITIZEN, Role.CITIZEN)
+    /** Above 40% of the living table, as the cafe rules count it. */
+    fun clearsThreshold(votes: Int, living: Int) = votes * 5 > living * 2
+    /** Day one is introductions only: a single round, no vote, and a meeting night. */
+    fun passesFor(day: Int) = if (day == 1) 1 else DISCUSSION_PASSES
 
     fun newGame(seed: Int = Random.nextInt(), characters: List<CharacterProfile> = Characters.all, humanName: String = "بازیکن مهمان"): Game {
         require(characters.size == 6 && characters.map { it.id }.distinct().size == 6)
@@ -40,7 +44,7 @@ object GameEngine {
             Phase.VOTING, Phase.NOMINATION -> game.living.filter { it.id != playerId }
             Phase.FINAL_VOTING -> game.living.filter { it.id in game.defenseCandidates && it.id != playerId }
             Phase.NIGHT -> when (player.role) {
-                Role.MAFIA -> game.living.filter { it.role != Role.MAFIA }
+                Role.MAFIA, Role.GODFATHER -> game.living.filter { !it.role.isMafiaTeam }
                 Role.DOCTOR -> game.living
                 Role.DETECTIVE -> game.living.filter { it.id != playerId }
                 Role.CITIZEN -> emptyList()
@@ -50,7 +54,7 @@ object GameEngine {
     }
 
     fun nightActors(game: Game): List<Player> =
-        listOf(Role.MAFIA, Role.DOCTOR, Role.DETECTIVE).flatMap { role ->
+        listOf(Role.GODFATHER, Role.MAFIA, Role.DOCTOR, Role.DETECTIVE).flatMap { role ->
             game.living.filter { it.role == role }
         }
 
@@ -59,7 +63,7 @@ object GameEngine {
         require(player.isAlive && !player.isHuman)
         return AgentContext(
             player.id, player.character, player.role,
-            if (player.role == Role.MAFIA) game.players.filter { it.role == Role.MAFIA && it.id != playerId }.map { it.id } else emptyList(),
+            if (player.role.isMafiaTeam) game.players.filter { it.role.isMafiaTeam && it.id != playerId }.map { it.id } else emptyList(),
             if (player.role == Role.DETECTIVE) game.investigations[playerId].orEmpty() else emptyList(),
             game.beliefs[playerId] ?: AgentBeliefs(),
             game.players.map { PublicPlayer(it.id, it.character.name, it.isAlive, isHuman = it.isHuman) },
@@ -93,7 +97,9 @@ object GameEngine {
                 conversation = next.conversation + GameMessage(EventKind.FINAL_VOTE_STARTED, game.day))
         return when {
             game.turn + 1 < game.discussionPlayers.size -> next.copy(turn = game.turn + 1)
-            game.pass < DISCUSSION_PASSES -> next.copy(turn = 0, pass = game.pass + 1)
+            game.pass < passesFor(game.day) -> next.copy(turn = 0, pass = game.pass + 1)
+            // Day one is introductions. Nobody can be voted out before the first real night.
+            game.day == 1 -> startNight(next)
             else -> next.copy(phase = Phase.NOMINATION, turn = 0, nominationOrder = game.discussionOrder,
                 conversation = next.conversation + GameMessage(EventKind.NOMINATION_STARTED, game.day))
         }
@@ -121,14 +127,10 @@ object GameEngine {
         if (actor(next) != null) return next
         if (game.nominationIndex + 1 < game.nominationOrder.size) return next.copy(nominationIndex = game.nominationIndex + 1)
         val totals = next.nominationVotes.filter { it.approved }.groupingBy { it.candidateId }.eachCount()
-        val cutoff = totals.values.sortedDescending().let { it.getOrNull(1) ?: it.firstOrNull() }
-        if (cutoff == null) return startNight(next.copy(conversation = next.conversation + GameMessage(EventKind.NO_ELIMINATION, game.day)))
-        val finalists = game.nominationOrder.filter { (totals[it] ?: 0) >= cutoff }
-        // Never choose an arbitrary finalist from a tie at the cutoff. If that
-        // tie produces three or more candidates, the day ends without defense.
-        if (finalists.size > 2) return startNight(next.copy(
-            conversation = next.conversation + GameMessage(EventKind.VOTE_TIED, game.day),
-        ))
+        // Everyone above the threshold defends. There is no cap and no tie-break here.
+        val finalists = game.nominationOrder.filter { clearsThreshold(totals[it] ?: 0, next.living.size) }
+        if (finalists.isEmpty()) return startNight(next.copy(
+            conversation = next.conversation + GameMessage(EventKind.NO_ELIMINATION, game.day)))
         return next.copy(phase = Phase.DEFENSE, turn = 0, defenseCandidates = finalists,
             conversation = next.conversation + finalists.map { GameMessage(EventKind.DEFENSE_STARTED, game.day, targetId = it) })
     }
@@ -141,18 +143,27 @@ object GameEngine {
                 targetId.takeUnless { it == ABSTAIN }))
         if (actor(next) != null) return next
         val totals = next.votes.values.filter { it != ABSTAIN }.groupingBy { it }.eachCount()
-        val leaders = totals.filterValues { it == totals.values.maxOrNull() }.keys
-        val resolved = when (leaders.size) {
-            0 -> next.copy(conversation = next.conversation + GameMessage(EventKind.NO_ELIMINATION, game.day))
-            1 -> next.copy(players = next.players.map { if (it.id == leaders.single()) it.copy(isAlive = false) else it },
-                conversation = next.conversation + GameMessage(EventKind.ELIMINATED, game.day, targetId = leaders.single()))
-            else -> next.copy(conversation = next.conversation + GameMessage(EventKind.VOTE_TIED, game.day))
+        val highest = totals.values.maxOrNull()
+        val leaders = totals.filterValues { it == highest }.keys
+        val resolved = when {
+            leaders.size > 1 -> next.copy(conversation = next.conversation + GameMessage(EventKind.VOTE_TIED, game.day))
+            // A lone leader still leaves only after clearing the same threshold.
+            leaders.size == 1 && clearsThreshold(highest ?: 0, next.living.size) ->
+                next.copy(players = next.players.map { if (it.id == leaders.single()) it.copy(isAlive = false) else it },
+                    conversation = next.conversation + GameMessage(EventKind.ELIMINATED, game.day, targetId = leaders.single()))
+            else -> next.copy(conversation = next.conversation + GameMessage(EventKind.NO_ELIMINATION, game.day))
         }
         return finishIfWon(resolved) ?: startNight(resolved)
     }
 
-    private fun startNight(game: Game) = game.copy(phase = Phase.NIGHT, nightActions = emptyMap(),
-        conversation = game.conversation + GameMessage(EventKind.NIGHT_STARTED, game.day))
+    private fun startNight(game: Game): Game {
+        val opened = game.copy(nightActions = emptyMap(),
+            conversation = game.conversation + GameMessage(EventKind.NIGHT_STARTED, game.day))
+        // Night one is the meeting night: Mafia learn each other, nobody acts and nobody dies.
+        if (game.day == 1) return opened.copy(phase = Phase.DAWN,
+            conversation = opened.conversation + GameMessage(EventKind.INTRO_NIGHT, game.day))
+        return opened.copy(phase = Phase.NIGHT)
+    }
 
     /** Compatibility for unfinished ballots saved before nomination/defense voting was added. */
     fun vote(game: Game, playerId: String, targetId: String): Game {
@@ -179,7 +190,7 @@ object GameEngine {
     }
 
     private fun resolveNight(game: Game): Game {
-        val proposed = game.nightActions.filterKeys { game.player(it).role == Role.MAFIA }.values
+        val proposed = game.nightActions.filterKeys { game.player(it).role.isMafiaTeam }.values
         val totals = proposed.groupingBy { it }.eachCount()
         val tied = totals.filterValues { it == totals.values.maxOrNull() }.keys.sorted()
         // Every living Mafia must have submitted a valid attack before dawn.
@@ -190,6 +201,7 @@ object GameEngine {
         val killed = victim.takeUnless { it in protection }
         var investigations = game.investigations
         game.nightActions.filterKeys { game.player(it).role == Role.DETECTIVE }.forEach { (detective, target) ->
+            // The Godfather reads as innocent. This is the role, not a bug.
             investigations = investigations + (detective to (investigations[detective].orEmpty() + Investigation(game.day, target, game.player(target).role == Role.MAFIA)))
         }
         val next = game.copy(phase = Phase.DAWN,
@@ -201,7 +213,7 @@ object GameEngine {
     }
 
     fun winningTeam(game: Game): Team? {
-        val mafia = game.living.count { it.role == Role.MAFIA }
+        val mafia = game.living.count { it.role.isMafiaTeam }
         return when { mafia == 0 -> Team.TOWN; mafia >= game.living.size - mafia -> Team.MAFIA; else -> null }
     }
 

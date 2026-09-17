@@ -758,10 +758,10 @@ private fun DeathAnnouncementOverlay(
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(vertical = 24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp)) {
         Chip(tr(Res.string.your_role))
         Image(painterResource(Res.drawable.icon), null, Modifier.size(150.dp).clip(RoundedCornerShape(30.dp)))
-        FText(roleName(game.human.role), size = 42, weight = FontWeight.ExtraBold, color = if (game.human.role == Role.MAFIA) Crimson else Gold)
+        FText(roleName(game.human.role), size = 42, weight = FontWeight.ExtraBold, color = if (game.human.role.isMafiaTeam) Crimson else Gold)
         FText(roleDescription(game.human.role), Modifier.widthIn(max = 480.dp), size = 17, align = TextAlign.Center)
-        if (game.human.role == Role.MAFIA) {
-            val mate = game.players.single { it.role == Role.MAFIA && !it.isHuman }
+        if (game.human.role.isMafiaTeam) {
+            val mate = game.players.single { it.role.isMafiaTeam && !it.isHuman }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Avatar(mate.character, 52)
                 FText(tr(Res.string.teammate, mate.character.name), color = Crimson)
@@ -803,9 +803,9 @@ private fun DeathAnnouncementOverlay(
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Column(Modifier.weight(1f)) {
                             FText(tr(if (defending) Res.string.defense_title else if (discussing) Res.string.discussion else when (game.phase) { Phase.VOTING -> Res.string.voting; Phase.NOMINATION -> Res.string.nomination_title; Phase.DEFENSE -> Res.string.defense_title; Phase.FINAL_VOTING -> Res.string.final_vote_title; Phase.NIGHT -> Res.string.night; Phase.DAWN -> Res.string.dawn; else -> Res.string.discussion }), size = if (compact) 17 else 21, weight = FontWeight.Bold)
-                            if (discussing && !compact) FText(tr(Res.string.pass_label, faNumber(game.pass)), size = 11, color = Muted)
+                            if (discussing && !compact) FText(tr(passLabel(game.day, game.pass)), size = 11, color = Muted)
                         }
-                        if (compact && discussing) FText(tr(Res.string.pass_label, faNumber(game.pass)), size = 10, color = Muted)
+                        if (compact && discussing) FText(tr(passLabel(game.day, game.pass)), size = 10, color = Muted)
                         if (!compact) {
                             GameAudioButtons(controller, openAudio)
                             if (controller.busy && !controller.paused) TextButton(controller::pause, contentPadding = PaddingValues(horizontal = 6.dp)) { FText(tr(Res.string.pause), size = 12, color = Muted) }
@@ -911,7 +911,7 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             FText(roleName(game.human.role), color = Gold, size = 22, weight = FontWeight.Bold)
             FText(roleDescription(game.human.role), size = 13)
-            if (game.human.role == Role.MAFIA) FText(tr(Res.string.teammate, game.players.single { it.role == Role.MAFIA && !it.isHuman }.character.name), color = Crimson)
+            if (game.human.role.isMafiaTeam) FText(tr(Res.string.teammate, game.players.single { it.role.isMafiaTeam && !it.isHuman }.character.name), color = Crimson)
             if (game.human.role == Role.DETECTIVE) {
                 val history = game.investigations[game.human.id].orEmpty()
                 if (history.isEmpty()) FText(tr(Res.string.private_empty), size = 12, color = Muted)
@@ -991,14 +991,46 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
 
 @Composable private fun SpeechInput(controller: GameController, shortScreen: Boolean) {
     var text by remember(controller.game?.day, controller.game?.pass, controller.game?.phase) { mutableStateOf("") }
+    val transcript = controller.pendingTranscript
+    // Dictation fills the field the player then edits; it never speaks for them.
+    LaunchedEffect(transcript) {
+        if (transcript != null) {
+            text = (if (text.isBlank()) transcript else "$text $transcript").take(1000)
+            controller.consumeTranscript()
+        }
+    }
+    // Leaving this turn must never leave the microphone open.
+    DisposableEffect(Unit) { onDispose { controller.cancelVoiceInput() } }
+    val voiceBusy = controller.recording || controller.transcribing
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         FText(tr(if (controller.game?.phase == Phase.DEFENSE) Res.string.defense_your_turn else Res.string.your_turn), size = 12, color = Gold)
         OutlinedTextField(text, { text = it.take(1000) }, Modifier.fillMaxWidth(), placeholder = { FText(tr(Res.string.speech_hint), size = 14, color = Muted) }, maxLines = if (shortScreen) 2 else 3, textStyle = MaterialTheme.typography.bodyLarge.copy(textDirection = TextDirection.Rtl, textAlign = TextAlign.Start), keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default), shape = RoundedCornerShape(12.dp))
+        controller.micError?.let { code ->
+            FText(tr(voiceErrorLabel(code)), size = 11, color = Crimson, modifier = Modifier.clickable(onClick = controller::dismissMicError))
+        }
+        if (controller.recording) FText(tr(Res.string.voice_recording), size = 11, color = Gold)
+        else if (controller.micSupported && !controller.transcribing) FText(tr(Res.string.voice_cost_note), size = 11, color = Muted)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            GoldButton(tr(Res.string.speak), { controller.say(text); text = "" }, Modifier.weight(1f), enabled = text.isNotBlank())
-            TextButton({ controller.say(""); text = "" }) { FText(tr(Res.string.skip), color = Muted) }
+            GoldButton(tr(Res.string.speak), { controller.cancelVoiceInput(); controller.say(text); text = "" }, Modifier.weight(1f), enabled = text.isNotBlank() && !voiceBusy)
+            if (controller.micSupported) when {
+                controller.transcribing -> FText(tr(Res.string.voice_working), size = 12, color = Muted)
+                controller.recording -> {
+                    TextButton(controller::finishVoiceInput) { FText(tr(Res.string.voice_stop), color = Gold) }
+                    TextButton(controller::cancelVoiceInput) { FText(tr(Res.string.voice_cancel), size = 12, color = Muted) }
+                }
+                else -> TextButton(controller::startVoiceInput) { FText(tr(Res.string.voice_start), color = Gold) }
+            }
+            if (!voiceBusy) TextButton({ controller.say(""); text = "" }) { FText(tr(Res.string.skip), color = Muted) }
         }
     }
+}
+
+private fun voiceErrorLabel(code: String) = when (code) {
+    "MIC_DENIED" -> Res.string.voice_error_denied
+    "MIC_UNAVAILABLE", "MIC_BUSY", "MIC_IDLE" -> Res.string.voice_error_unavailable
+    "MIC_EMPTY" -> Res.string.voice_error_empty
+    "MIC_TOO_LONG" -> Res.string.voice_error_long
+    else -> Res.string.voice_error_failed
 }
 
 /** Public nomination spotlight. Pending AI ballot plans never reach this UI. */
@@ -1065,7 +1097,7 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
     val voting = game.phase in listOf(Phase.VOTING, Phase.FINAL_VOTING)
     val targetScroll = rememberLazyListState()
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        FText(tr(if (voting) Res.string.vote_prompt else when (game.human.role) { Role.MAFIA -> Res.string.kill_prompt; Role.DOCTOR -> Res.string.protect_prompt; else -> Res.string.investigate_prompt }), size = 17, color = Gold, weight = FontWeight.Bold)
+        FText(tr(if (voting) Res.string.vote_prompt else when { game.human.role.isMafiaTeam -> Res.string.kill_prompt; game.human.role == Role.DOCTOR -> Res.string.protect_prompt; else -> Res.string.investigate_prompt }), size = 17, color = Gold, weight = FontWeight.Bold)
         FText(tr(if (game.phase == Phase.FINAL_VOTING) Res.string.final_vote_help else if (voting) Res.string.vote_help else Res.string.night_private), size = 11, color = Muted)
         if (targetScroll.canScrollBackward || targetScroll.canScrollForward)
             FText(tr(Res.string.target_swipe_hint), size = 11, color = Muted)
@@ -1096,6 +1128,11 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
     }
 }
 
+/** Round one opens the day; round two is where the table answers what round one raised. */
+private fun passLabel(day: Int, pass: Int) =
+    if (day == 1) Res.string.pass_label_intro
+    else if (pass <= 1) Res.string.pass_label_open else Res.string.pass_label_answer
+
 @Composable private fun Thinking(message: String) {
     Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Panel).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
         CircularProgressIndicator(Modifier.size(18.dp), color = Gold, strokeWidth = 2.dp)
@@ -1109,7 +1146,7 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
     }
 }
 @Composable private fun Results(game: Game, lobby: () -> Unit) {
-    val won = (game.human.role == Role.MAFIA) == (game.winner == Team.MAFIA)
+    val won = game.human.role.isMafiaTeam == (game.winner == Team.MAFIA)
     val totalCost = game.usage.takeIf { it.isNotEmpty() && it.all { usage -> usage.estimatedCost != null } }
         ?.sumOf { requireNotNull(it.estimatedCost) }
     LazyColumn(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp), contentPadding = PaddingValues(vertical = 24.dp)) {
@@ -1121,7 +1158,7 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
             Row(Modifier.widthIn(max = 500.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Panel).padding(14.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Avatar(player.character, 48, player.isAlive)
                 FText(player.character.name, Modifier.weight(1f), weight = FontWeight.Bold)
-                FText(roleName(player.role), color = if (player.role == Role.MAFIA) Crimson else Gold)
+                FText(roleName(player.role), color = if (player.role.isMafiaTeam) Crimson else Gold)
             }
         }
         item {

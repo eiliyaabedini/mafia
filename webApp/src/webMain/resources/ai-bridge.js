@@ -10,6 +10,9 @@
   const COMPLETION_TIMEOUT = 90_000;
   const SPEECH_TIMEOUT = 45_000;
   const NARRATION_TIMEOUT = 120_000;
+  // Recording waits on a human: the permission prompt and the turn itself.
+  const MIC_TIMEOUT = 200_000;
+  const TRANSCRIBE_TIMEOUT = 120_000;
   const VOICES = Object.freeze({ arman: 'onyx', sara: 'nova', reza: 'echo', nika: 'shimmer', ali: 'fable', mina: 'coral' });
   const AUDIO_PREFERENCE_KEY = 'mafia.audio.enabled.v1';
   // Keep gameplay narration on the documented low-cost model. If it is absent,
@@ -417,11 +420,126 @@
     catch (_) { /* The current in-memory preference still works. */ }
   }
 
+  // ---- Voice input ----
+  // Recording is local and free. Only transcription is a paid wallet call, so a
+  // cancelled recording is discarded without ever reaching AI Pass.
+  const MIC_MAX_MS = 120_000;
+  const MIC_MAX_BYTES = 24 * 1024 * 1024;
+  const TRANSCRIBE_MODEL = 'whisper-1';
+  const MIC_TYPES = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+  let micRecorder = null;
+  let micStream = null;
+  let micChunks = [];
+  let micTimer = null;
+
+  function micSupported() {
+    return typeof MediaRecorder === 'function' && Boolean(navigator.mediaDevices?.getUserMedia);
+  }
+
+  function micMimeType() {
+    for (const type of MIC_TYPES) {
+      try { if (MediaRecorder.isTypeSupported(type)) return type; }
+      catch (_) { /* Older browsers omit isTypeSupported; fall back to the default. */ }
+    }
+    return '';
+  }
+
+  function micExtension(mime) {
+    if (String(mime).includes('mp4')) return 'mp4';
+    if (String(mime).includes('ogg')) return 'ogg';
+    return 'webm';
+  }
+
+  function releaseMic() {
+    if (micTimer) { clearTimeout(micTimer); micTimer = null; }
+    const recorder = micRecorder;
+    micRecorder = null;
+    if (recorder && recorder.state !== 'inactive') { try { recorder.stop(); } catch (_) { /* Already stopping. */ } }
+    if (micStream) { try { micStream.getTracks().forEach(track => track.stop()); } catch (_) { /* Track already ended. */ } }
+    micStream = null;
+  }
+
+  function cancelRecording() { releaseMic(); micChunks = []; }
+
+  async function micStart() {
+    if (!micSupported()) throw new Error('MIC_UNAVAILABLE');
+    if (micRecorder) throw new Error('MIC_BUSY');
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch (_) { throw new Error('MIC_DENIED'); }
+    const mime = micMimeType();
+    let recorder;
+    try { recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined); }
+    catch (_) {
+      try { stream.getTracks().forEach(track => track.stop()); } catch (__) { /* Nothing to release. */ }
+      throw new Error('MIC_UNAVAILABLE');
+    }
+    micChunks = [];
+    micStream = stream;
+    micRecorder = recorder;
+    recorder.ondataavailable = event => { if (event.data && event.data.size) micChunks.push(event.data); };
+    recorder.start();
+    // An open microphone that nobody stops must not record indefinitely.
+    micTimer = setTimeout(() => { try { recorder.stop(); } catch (_) { /* Already stopped. */ } }, MIC_MAX_MS);
+    return { started: true };
+  }
+
+  function micBlob() {
+    return new Promise(resolve => {
+      const recorder = micRecorder;
+      const collect = () => {
+        const chunks = micChunks;
+        micChunks = [];
+        const type = recorder?.mimeType || micMimeType() || 'audio/webm';
+        resolve(chunks.length ? new Blob(chunks, { type }) : null);
+      };
+      if (!recorder || recorder.state === 'inactive') { collect(); return; }
+      recorder.onstop = collect;
+      try { recorder.stop(); } catch (_) { collect(); }
+    });
+  }
+
+  async function micStop(entry) {
+    if (!micRecorder) throw new Error('MIC_IDLE');
+    let blob;
+    try { blob = await micBlob(); } finally { releaseMic(); }
+    assertCurrent(entry);
+    if (!blob || blob.size === 0) throw new Error('MIC_EMPTY');
+    if (blob.size > MIC_MAX_BYTES) throw new Error('MIC_TOO_LONG');
+    const api = await sdk();
+    assertCurrent(entry);
+    if (!walletConnected(api)) throw new Error('SETUP_REQUIRED');
+    const file = new File([blob], `speech.${micExtension(blob.type)}`, { type: blob.type || 'audio/webm' });
+    blob = null;
+    const previousBalanceVersion = walletBalanceVersion;
+    const costBaseline = await paidCallBaseline(api);
+    let cost = null;
+    let result;
+    try {
+      result = await api.transcribeAudio({
+        audioFile: file, model: TRANSCRIBE_MODEL, language: 'fa', temperature: 0,
+        signal: entry.controller.signal, timeout: TRANSCRIBE_TIMEOUT,
+      });
+      cost = await paidCallCost(api, costBaseline);
+    } catch (error) {
+      try {
+        cost = await paidCallCost(api, costBaseline);
+        // A charged transcription that then failed still belongs in the game total.
+        if (Number.isFinite(cost) && cost >= 0) error.mafiaUsage = paidUsage(TRANSCRIBE_MODEL, cost);
+      } catch (_) { /* The original transcription error remains authoritative. */ }
+      throw error;
+    } finally { refreshWalletAfterPaid(previousBalanceVersion); }
+    assertCurrent(entry);
+    const text = typeof result?.text === 'string' ? result.text.trim() : '';
+    return { text, usage: paidUsage(TRANSCRIBE_MODEL, cost) };
+  }
+
   function mediaStatus() {
     const playing = Boolean(speechPlaybackEntry && audioContext?.state === 'running');
     return { enabled: audioEnabled, playing, tutorialAvailable: TUTORIAL_AUDIO_READY,
       pending: Boolean((activeTutorial || activeNarration) && !playing),
-      clipId: tutorialClipId, error: mediaError };
+      clipId: tutorialClipId, error: mediaError,
+      micSupported: micSupported(), recording: Boolean(micRecorder) };
   }
 
   function resolveSpeechModel(api, signal) {
@@ -1098,7 +1216,9 @@
 
   async function perform(entry, op, payload) {
     assertCurrent(entry);
-    if (!['models', 'complete', 'narrate', 'walletOpen', 'walletStatus', 'musicStatus', 'mediaStatus', 'tutorialPlay', 'effectsStatus', 'effect', 'backup', 'restoreBackup'].includes(op)) throw new Error('UNKNOWN_OPERATION');
+    if (!['models', 'complete', 'narrate', 'walletOpen', 'walletStatus', 'musicStatus', 'mediaStatus', 'tutorialPlay', 'effectsStatus', 'effect', 'backup', 'restoreBackup', 'micStart', 'micStop'].includes(op)) throw new Error('UNKNOWN_OPERATION');
+    if (op === 'micStart') return micStart();
+    if (op === 'micStop') return micStop(entry);
     if (op === 'backup' || op === 'restoreBackup') return appBackup(entry, op, payload);
     if (op === 'effectsStatus') return { enabled: effectsEnabled };
     if (op === 'effect') { enqueueEffect(entry, payload?.cue); return null; }
@@ -1218,7 +1338,8 @@
       pending.set(entry.id, entry);
       if (op !== 'tutorialPlay') armTimeout(entry, op === 'narrate' ? NARRATION_TIMEOUT
         : ['complete', 'backup', 'restoreBackup'].includes(op) ? AUTH_TIMEOUT + COMPLETION_TIMEOUT + NETWORK_TIMEOUT
-          : op === 'walletOpen' ? AUTH_TIMEOUT + NETWORK_TIMEOUT : 40_000);
+          : op === 'walletOpen' ? AUTH_TIMEOUT + NETWORK_TIMEOUT
+            : ['micStart', 'micStop'].includes(op) ? MIC_TIMEOUT : 40_000);
       const run = () => Promise.resolve().then(() => {
         assertCurrent(entry);
         return perform(entry, op, JSON.parse(raw));
@@ -1256,7 +1377,8 @@
         audioVolume = Math.max(0, Math.min(1, volume));
         if (audioGain) audioGain.gain.value = audioVolume;
         if (audioVolume === 0) { stopTutorial(); stopNarration(); } else unlockAudio();
-      } else if (action === 'stop') { stopTutorial(); stopNarration(); }
+      } else if (action === 'micCancel') cancelRecording();
+      else if (action === 'stop') { stopTutorial(); stopNarration(); }
       else if (action === 'tutorialStop') stopTutorial();
     },
     poll(id) {

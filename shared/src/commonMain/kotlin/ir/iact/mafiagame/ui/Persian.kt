@@ -18,11 +18,13 @@ fun rtl(text: String): String = text.replace(directionControls, "").split('\n').
 }
 @Composable fun tr(resource: StringResource, vararg args: Any): String = stringResource(resource, *args)
 @Composable fun roleName(role: Role) = tr(when (role) {
-    Role.MAFIA -> Res.string.role_mafia; Role.DETECTIVE -> Res.string.role_detective
+    Role.MAFIA -> Res.string.role_mafia; Role.GODFATHER -> Res.string.role_godfather
+    Role.DETECTIVE -> Res.string.role_detective
     Role.DOCTOR -> Res.string.role_doctor; Role.CITIZEN -> Res.string.role_citizen
 })
 @Composable fun roleDescription(role: Role) = tr(when (role) {
-    Role.MAFIA -> Res.string.desc_mafia; Role.DETECTIVE -> Res.string.desc_detective
+    Role.MAFIA -> Res.string.desc_mafia; Role.GODFATHER -> Res.string.desc_godfather
+    Role.DETECTIVE -> Res.string.desc_detective
     Role.DOCTOR -> Res.string.desc_doctor; Role.CITIZEN -> Res.string.desc_citizen
 })
 @Composable fun eventText(event: GameMessage, game: Game): String {
@@ -42,6 +44,7 @@ fun rtl(text: String): String = text.replace(directionControls, "").split('\n').
         EventKind.VOTE -> tr(Res.string.vote_event, name(event.playerId), name(event.targetId))
         EventKind.VOTE_TIED -> tr(Res.string.tie_event)
         EventKind.ELIMINATED -> tr(Res.string.eliminated_event, name(event.targetId))
+        EventKind.INTRO_NIGHT -> tr(Res.string.intro_night_event)
         EventKind.NIGHT_STARTED -> tr(Res.string.night_event)
         EventKind.NIGHT_SAVED -> tr(Res.string.saved_event)
         EventKind.NIGHT_KILLED -> tr(Res.string.killed_event, name(event.targetId))

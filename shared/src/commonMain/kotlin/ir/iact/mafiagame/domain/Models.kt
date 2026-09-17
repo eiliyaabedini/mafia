@@ -2,10 +2,12 @@ package ir.iact.mafiagame.domain
 
 import kotlinx.serialization.Serializable
 
-@Serializable enum class Role { MAFIA, DETECTIVE, DOCTOR, CITIZEN }
+@Serializable enum class Role { MAFIA, GODFATHER, DETECTIVE, DOCTOR, CITIZEN }
+/** Both Mafia roles share the team, the night decision and the win condition. */
+val Role.isMafiaTeam get() = this == Role.MAFIA || this == Role.GODFATHER
 @Serializable enum class Phase { REVEAL, DISCUSSION, VOTING, NOMINATION, DEFENSE, FINAL_VOTING, NIGHT, DAWN, FINISHED }
 @Serializable enum class Team { TOWN, MAFIA }
-@Serializable enum class EventKind { DAY_STARTED, SPEECH, SKIP, VOTE, VOTE_TIED, NOMINATION_STARTED, NOMINATION_YES, NOMINATION_NO, DEFENSE_STARTED, DEFENSE_SPEECH, DEFENSE_SKIP, FINAL_VOTE_STARTED, FINAL_VOTE, FINAL_ABSTAIN, NO_ELIMINATION, ELIMINATED, NIGHT_STARTED, NIGHT_SAVED, NIGHT_KILLED, GAME_ENDED }
+@Serializable enum class EventKind { DAY_STARTED, INTRO_NIGHT, SPEECH, SKIP, VOTE, VOTE_TIED, NOMINATION_STARTED, NOMINATION_YES, NOMINATION_NO, DEFENSE_STARTED, DEFENSE_SPEECH, DEFENSE_SKIP, FINAL_VOTE_STARTED, FINAL_VOTE, FINAL_ABSTAIN, NO_ELIMINATION, ELIMINATED, NIGHT_STARTED, NIGHT_SAVED, NIGHT_KILLED, GAME_ENDED }
 
 @Serializable data class CharacterProfile(
     val id: String,

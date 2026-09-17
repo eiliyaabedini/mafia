@@ -37,6 +37,12 @@ class GameController(private val gateway: AiGateway, private val scope: Coroutin
     var audioPreferenceReady by mutableStateOf(!gateway.audioAvailable); private set
     var mediaStatus by mutableStateOf(MediaStatus(enabled = gateway.audioAvailable)); private set
     var tutorialClipId by mutableStateOf<String?>(null); private set
+    var recording by mutableStateOf(false); private set
+    var transcribing by mutableStateOf(false); private set
+    var micError by mutableStateOf<String?>(null); private set
+    /** Transcribed text waits here for the player to review and edit before sending. */
+    var pendingTranscript by mutableStateOf<String?>(null); private set
+    private var micJob: Job? = null
     var tutorialLoading by mutableStateOf(false); private set
     var tutorialError by mutableStateOf<String?>(null); private set
     var musicEnabled by mutableStateOf(gateway.musicAvailable); private set
@@ -389,6 +395,59 @@ class GameController(private val gateway: AiGateway, private val scope: Coroutin
         effectsJobs.clear()
         gateway.setEffectsActive(false)
         gateway.stopEffects()
+    }
+
+    val micSupported get() = gateway.audioAvailable && mediaStatus.micSupported
+
+    /** Capture stays on this device until the player stops; only transcription is charged. */
+    fun startVoiceInput() {
+        if (recording || transcribing || micJob?.isActive == true) return
+        micError = null
+        micJob = scope.launch {
+            try {
+                if (gateway.startRecording()) recording = true else micError = "MIC_UNAVAILABLE"
+            } catch (e: CancellationException) { throw e }
+            catch (e: Exception) { recording = false; micError = e.message ?: "MIC_UNAVAILABLE" }
+        }
+    }
+
+    fun finishVoiceInput() {
+        if (!recording || transcribing) return
+        recording = false
+        transcribing = true
+        micJob = scope.launch {
+            try {
+                val result = gateway.transcribeRecording()
+                recordTranscriptionUsage(result?.usage)
+                val text = result?.text.orEmpty().trim()
+                if (text.isEmpty()) micError = "MIC_EMPTY" else pendingTranscript = text
+            } catch (e: CancellationException) { throw e }
+            catch (e: Exception) {
+                // A charged transcription that then failed still belongs in the game total.
+                recordTranscriptionUsage((e as? AiCallFailed)?.usage)
+                micError = e.message ?: "MIC_FAILED"
+            } finally { transcribing = false }
+        }
+    }
+
+    /** Discards the recording locally. Nothing reaches AI Pass and nothing is charged. */
+    fun cancelVoiceInput() {
+        // A transcription already in flight may have been charged. Let it finish so
+        // its amount still reaches the game total instead of silently disappearing.
+        if (transcribing) return
+        micJob?.cancel()
+        micJob = null
+        gateway.cancelRecording()
+        recording = false
+        transcribing = false
+    }
+
+    fun consumeTranscript() { pendingTranscript = null }
+    fun dismissMicError() { micError = null }
+
+    private fun recordTranscriptionUsage(usage: AiUsage?) {
+        if (usage == null) return
+        game?.let { commitGame(it.copy(usage = it.usage + usage), announceEffects = false) }
     }
 
     private fun commitGame(next: Game, announceEffects: Boolean = true) {

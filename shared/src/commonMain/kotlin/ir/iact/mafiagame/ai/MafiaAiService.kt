@@ -34,7 +34,11 @@ class AiCallFailed(code: String, val usage: AiUsage?) : IllegalStateException(co
     val clipId: String? = null,
     val error: String? = null,
     val tutorialAvailable: Boolean = false,
+    val micSupported: Boolean = false,
+    val recording: Boolean = false,
 )
+/** Only the transcription is a paid call; recording and discarding are free. */
+@Serializable data class Transcription(val text: String = "", val usage: AiUsage? = null)
 @Serializable data class EffectsStatus(val enabled: Boolean = false)
 @Serializable enum class WalletConnection { UNKNOWN, SIGNED_OUT, CONNECTED }
 /** Decimal USD as returned by AI Pass, without converting money through Float. */
@@ -73,6 +77,10 @@ interface AiGateway {
     fun setAudioVolume(volume: Float) = Unit
     fun stopAudio() = Unit
     suspend fun mediaStatus(): MediaStatus = MediaStatus()
+    /** Starts local microphone capture. Nothing is sent or charged until transcription. */
+    suspend fun startRecording(): Boolean = false
+    suspend fun transcribeRecording(): Transcription? = null
+    fun cancelRecording() = Unit
     suspend fun playTutorial(clipId: String) = Unit
     fun stopTutorial() = Unit
     fun setMusicEnabled(enabled: Boolean) = Unit
@@ -133,6 +141,7 @@ class BrowserGateway(
                 // Navigation or mute cancels it; waiting is never a paid request.
                 "tutorialPlay" -> 86_400_000L
                 "backup", "restoreBackup", "walletOpen" -> 390_000L
+                "micStart", "micStop" -> 210_000L
                 else -> 45_000L
             }
             return withTimeoutOrNull(timeout) {
@@ -172,6 +181,11 @@ class BrowserGateway(
         call("tutorialPlay", buildJsonObject { put("clipId", clipId) }.toString())
     }
     override fun stopTutorial() { audioControl("tutorialStop", 0.0) }
+    override suspend fun startRecording(): Boolean =
+        (call("micStart") as? JsonObject)?.get("started")?.jsonPrimitive?.booleanOrNull == true
+    override suspend fun transcribeRecording(): Transcription =
+        MafiaJson.decodeFromJsonElement(Transcription.serializer(), call("micStop"))
+    override fun cancelRecording() { audioControl("micCancel", 0.0) }
     override fun setMusicEnabled(enabled: Boolean) { audioControl("musicEnable", if (enabled) 1.0 else 0.0) }
     override fun setMusicVolume(volume: Float) { audioControl("musicVolume", volume.toDouble()) }
     override fun setMusicActive(active: Boolean) { audioControl("musicActive", if (active) 1.0 else 0.0) }
@@ -252,7 +266,8 @@ class AiPassMafiaService(private val gateway: AiGateway, private val model: AiMo
             "Return {\"target\":\"one legal target id\"} or {\"target\":\"abstain\"}."
         else "Choose one living player to eliminate. Return {\"target\":\"one legal target id\"}.")
     override suspend fun chooseNightAction(context: AgentContext) = target(context, when (context.role) {
-        Role.MAFIA -> "Propose a non-Mafia victim."
+        Role.MAFIA -> "Propose a non-Mafia victim. Your Godfather proposes too; a tie is resolved by the engine."
+        Role.GODFATHER -> "Propose a non-Mafia victim. You lead the Mafia, and the Detective is told you are not Mafia."
         Role.DOCTOR -> "Choose someone to protect. You may protect yourself."
         Role.DETECTIVE -> "Choose someone to investigate. Consider your previous investigations."
         Role.CITIZEN -> error("ILLEGAL_ACTION")

@@ -34,7 +34,7 @@ import kotlinx.serialization.json.Json
             require(game.players.count { it.isHuman } == 1 && game.human.id == "player_0")
             require(game.players.map { it.character.id }.toSet() == (Characters.all.map { it.id } + "you").toSet())
             require(game.human.character.id == "you" && PlayerNames.valid(game.human.character.name))
-            require(game.players.groupingBy { it.role }.eachCount() == mapOf(Role.MAFIA to 2, Role.DOCTOR to 1, Role.DETECTIVE to 1, Role.CITIZEN to 3))
+            require(game.players.groupingBy { it.role }.eachCount() == mapOf(Role.GODFATHER to 1, Role.MAFIA to 1, Role.DOCTOR to 1, Role.DETECTIVE to 1, Role.CITIZEN to 3))
             require(game.day in 1..1000 && game.pass in 1..GameEngine.DISCUSSION_PASSES && game.turn in 0..6)
             require(game.conversation.size <= 5000 && game.conversation.all {
                 it.day in 1..game.day && (it.playerId == null || it.playerId in ids) &&
