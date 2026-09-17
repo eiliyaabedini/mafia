@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
     val musicVolume: Float = .25f,
     val effectsEnabled: Boolean = true,
     val effectsVolume: Float = .55f,
+    val voiceAutoSend: Boolean = true,
     val game: Game? = null,
     val notes: String = "",
     val welcomeSeen: Boolean = false,

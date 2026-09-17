@@ -1,6 +1,14 @@
 package ir.iact.mafiagame
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
@@ -781,6 +789,12 @@ private fun DeathAnnouncementOverlay(
     val actor = GameEngine.actor(game)
     val night = game.phase == Phase.NIGHT
     val narrationId = controller.narratingPlayerId.takeIf { controller.audioEnabled }
+    // Text appears before the voice does, so say whether we are generating it or playing it.
+    val activity = when {
+        controller.speechPlaying -> CardActivity.SPEAKING
+        controller.speechPreparing || controller.busy -> CardActivity.WAITING
+        else -> CardActivity.NONE
+    }
     val defending = game.phase == Phase.DEFENSE || (narrationId != null &&
         game.conversation.lastOrNull { it.kind in listOf(EventKind.SPEECH, EventKind.DEFENSE_SPEECH) }?.kind == EventKind.DEFENSE_SPEECH)
     val discussing = game.phase == Phase.DISCUSSION || (narrationId != null && !night && !defending)
@@ -797,9 +811,9 @@ private fun DeathAnnouncementOverlay(
                 TextButton(openNotes) { FText(tr(Res.string.private_button), size = 12, color = Gold) }
             }
             Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                if (!compact) TableSidebar(game, narrationId, Modifier.width(220.dp).fillMaxHeight())
+                if (!compact) TableSidebar(game, narrationId, activity, Modifier.width(220.dp).fillMaxHeight())
                 Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(if (compact) 8.dp else 12.dp)) {
-                    if (compact && !shortScreen) TableStrip(game, narrationId)
+                    if (compact && !shortScreen) TableStrip(game, narrationId, activity)
                     if (!game.human.isAlive) FText(tr(Res.string.human_eliminated), size = 12, color = Crimson)
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Column(Modifier.weight(1f)) {
@@ -844,7 +858,8 @@ private fun DeathAnnouncementOverlay(
                             if (!controller.busy) GoldButton(tr(Res.string.resume), controller::resume, Modifier.fillMaxWidth())
                         } else when {
                             // The engine may have advanced, but the public speaker still owns this moment.
-                            narrationId != null -> Unit
+                            narrationId != null -> if (controller.speechPreparing) Thinking(
+                                tr(Res.string.speech_preparing, game.players.firstOrNull { it.id == narrationId }?.character?.name.orEmpty()))
                             // Night and voting never reveal the identity, role, or progress of a hidden actor.
                             game.phase == Phase.NOMINATION -> Unit
                             controller.busy -> Thinking(if (night) tr(Res.string.night_thinking) else if (game.phase in listOf(Phase.VOTING, Phase.FINAL_VOTING)) tr(Res.string.vote_thinking) else tr(Res.string.thinking, actor?.character?.name.orEmpty()))
@@ -874,13 +889,16 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
         game.discussionPlayers + game.players.filterNot { it.isAlive }
     else game.players
 
-@Composable private fun TableStrip(game: Game, narrationId: String?) {
+@Composable private fun TableStrip(game: Game, narrationId: String?, activity: CardActivity) {
     val actorId = visibleSpeakerId(game, narrationId)
     LazyRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(vertical = 2.dp)) {
         items(visibleTablePlayers(game, narrationId), key = { it.id }) { player ->
             val active = player.id == actorId
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(60.dp)) {
-                Box(Modifier.border(1.dp, if (active) Gold else Color.Transparent, CircleShape).padding(3.dp)) { Avatar(player.character, 43, player.isAlive) }
+                Box(Modifier.border(1.dp, if (active) Gold else Color.Transparent, CircleShape).padding(3.dp), contentAlignment = Alignment.Center) {
+                    Avatar(player.character, 43, player.isAlive)
+                    if (active) ActivityBadge(activity, 16)
+                }
                 FText(player.character.name, size = 11, color = if (active) Gold else if (player.isAlive) Paper else Muted)
                 if (!player.isAlive) FText(tr(Res.string.eliminated), size = 9, color = Crimson)
             }
@@ -888,7 +906,7 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
     }
 }
 
-@Composable private fun TableSidebar(game: Game, narrationId: String?, modifier: Modifier) {
+@Composable private fun TableSidebar(game: Game, narrationId: String?, activity: CardActivity, modifier: Modifier) {
     val actorId = visibleSpeakerId(game, narrationId)
     Column(modifier.clip(RoundedCornerShape(18.dp)).background(Panel).border(1.dp, Line, RoundedCornerShape(18.dp)).padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         FText(tr(if (game.phase == Phase.DISCUSSION) Res.string.discussion_order_title else Res.string.at_table), size = 16, weight = FontWeight.Bold)
@@ -896,10 +914,19 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
         visibleTablePlayers(game, narrationId).forEach { player ->
             val active = player.id == actorId
             Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(if (active) Gold.copy(alpha = .08f) else Color.Transparent).padding(vertical = 6.dp, horizontal = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Avatar(player.character, 42, player.isAlive)
+                Box(contentAlignment = Alignment.Center) {
+                    Avatar(player.character, 42, player.isAlive)
+                    if (active) ActivityBadge(activity, 16)
+                }
                 Column(Modifier.weight(1f)) {
                     FText(player.character.name, size = 14, weight = FontWeight.Medium, color = if (active) Gold else if (player.isAlive) Paper else Muted)
-                    FText(tr(if (!player.isAlive) Res.string.eliminated else if (active) Res.string.speaking_now else Res.string.hidden_role), size = 10, color = if (!player.isAlive) Crimson else Muted)
+                    FText(tr(when {
+                        !player.isAlive -> Res.string.eliminated
+                        active && activity == CardActivity.SPEAKING -> Res.string.speaking_now
+                        active && activity == CardActivity.WAITING -> Res.string.status_preparing
+                        active -> Res.string.speaking_now
+                        else -> Res.string.hidden_role
+                    }), size = 10, color = if (!player.isAlive) Crimson else Muted)
                 }
             }
         }
@@ -998,8 +1025,9 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
     // Dictation fills the field the player then edits; it never speaks for them.
     LaunchedEffect(transcript) {
         if (transcript != null) {
-            text = (if (text.isBlank()) transcript else "$text $transcript").take(1000)
+            val merged = (if (text.isBlank()) transcript else "$text $transcript").take(1000)
             controller.consumeTranscript()
+            if (controller.voiceAutoSend && merged.isNotBlank()) { text = ""; controller.say(merged) } else text = merged
         }
     }
     // Leaving this turn must never leave the microphone open.
@@ -1013,6 +1041,12 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
         }
         if (controller.recording) FText(tr(Res.string.voice_recording), size = 11, color = Gold)
         else if (controller.micSupported && !controller.transcribing) FText(tr(Res.string.voice_cost_note), size = 11, color = Muted)
+        if (controller.micSupported && !voiceBusy) Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(controller.voiceAutoSend, controller::updateVoiceAutoSend, Modifier.size(26.dp),
+                colors = CheckboxDefaults.colors(checkedColor = Gold, uncheckedColor = Muted, checkmarkColor = Ink))
+            Spacer(Modifier.width(8.dp))
+            FText(tr(Res.string.voice_auto_send), size = 11, color = Muted)
+        }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             GoldButton(tr(Res.string.speak), { controller.cancelVoiceInput(); controller.say(text); text = "" }, Modifier.weight(1f), enabled = text.isNotBlank() && !voiceBusy)
             if (controller.micSupported) when {
@@ -1135,6 +1169,34 @@ private fun voiceErrorLabel(code: String) = when (code) {
 private fun passLabel(day: Int, pass: Int) =
     if (day == 1) Res.string.pass_label_intro
     else if (pass <= 1) Res.string.pass_label_open else Res.string.pass_label_answer
+
+/** What the table shows above a portrait while everyone waits on that player. */
+private enum class CardActivity { NONE, WAITING, SPEAKING }
+
+/** Three bars that move only while audio is actually playing. */
+@Composable private fun SpeakingBars(size: Int) {
+    val transition = rememberInfiniteTransition()
+    val heights = List(3) { index ->
+        transition.animateFloat(0.3f, 1f, infiniteRepeatable(
+            tween(430, delayMillis = index * 150, easing = LinearEasing), RepeatMode.Reverse))
+    }
+    Canvas(Modifier.size(size.dp)) {
+        val bar = this.size.width / 5f
+        heights.forEachIndexed { index, height ->
+            val tall = this.size.height * height.value
+            drawRoundRect(Gold, Offset(index * bar * 2f + bar / 2f, (this.size.height - tall) / 2f),
+                Size(bar, tall), CornerRadius(bar / 2f))
+        }
+    }
+}
+
+@Composable private fun ActivityBadge(activity: CardActivity, size: Int) {
+    if (activity == CardActivity.NONE) return
+    Box(Modifier.size((size + 8).dp).clip(CircleShape).background(Ink.copy(alpha = .78f)), contentAlignment = Alignment.Center) {
+        if (activity == CardActivity.SPEAKING) SpeakingBars(size)
+        else CircularProgressIndicator(Modifier.size(size.dp), color = Gold, strokeWidth = 2.dp)
+    }
+}
 
 @Composable private fun Thinking(message: String) {
     Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Panel).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {

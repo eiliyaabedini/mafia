@@ -42,6 +42,7 @@ class GameController(private val gateway: AiGateway, private val scope: Coroutin
     var micError by mutableStateOf<String?>(null); private set
     /** Transcribed text waits here for the player to review and edit before sending. */
     var pendingTranscript by mutableStateOf<String?>(null); private set
+    var voiceAutoSend by mutableStateOf(true); private set
     private var micJob: Job? = null
     var tutorialLoading by mutableStateOf(false); private set
     var tutorialError by mutableStateOf<String?>(null); private set
@@ -155,7 +156,7 @@ class GameController(private val gateway: AiGateway, private val scope: Coroutin
 
     private fun snapshot() = SavedApp(playerName = playerName, audioEnabled = audioEnabled, audioVolume = audioVolume,
         musicEnabled = musicEnabled, musicVolume = musicVolume, effectsEnabled = effectsEnabled,
-        effectsVolume = effectsVolume, game = game ?: savedGame, notes = notes)
+        effectsVolume = effectsVolume, voiceAutoSend = voiceAutoSend, game = game ?: savedGame, notes = notes)
 
     private fun persist() {
         if (!restoringState && gateway.storageAvailable) localSaveFailed = !gateway.saveLocal(snapshot())
@@ -167,6 +168,7 @@ class GameController(private val gateway: AiGateway, private val scope: Coroutin
         updateAudioVolume(state.audioVolume); updateAudioEnabled(state.audioEnabled)
         updateMusicVolume(state.musicVolume); updateMusicEnabled(state.musicEnabled)
         updateEffectsVolume(state.effectsVolume); updateEffectsEnabled(state.effectsEnabled)
+        voiceAutoSend = state.voiceAutoSend
     }
 
     /** Restoring never starts an AI request. The ordinary Resume button owns that. */
@@ -442,7 +444,13 @@ class GameController(private val gateway: AiGateway, private val scope: Coroutin
         transcribing = false
     }
 
+    fun updateVoiceAutoSend(value: Boolean) { voiceAutoSend = value; persist() }
     fun consumeTranscript() { pendingTranscript = null }
+
+    /** Speech is generated after the line is already on screen; both states are worth showing. */
+    val speechPlaying get() = narratingPlayerId != null && mediaStatus.playing
+    val speechPreparing get() = narratingPlayerId != null && !mediaStatus.playing &&
+        audioEnabled && audioVolume > 0f && audioError == null
     fun dismissMicError() { micError = null }
 
     private fun recordTranscriptionUsage(usage: AiUsage?) {

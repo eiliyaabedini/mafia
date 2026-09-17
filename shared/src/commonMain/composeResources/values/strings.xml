@@ -33,6 +33,10 @@
     <string name="role_godfather">رئیس مافیا</string>
     <string name="desc_godfather">تو رئیس مافیا هستی. با مافیای دیگر هر شب یک نفر را انتخاب می‌کنید. اگر کارآگاه تو را استعلام بگیرد، جواب «مافیا نیست» می‌گیرد.</string>
     <string name="intro_night_event">شب معارفه. مافیاها یکدیگر را شناختند. امشب کسی کشته نمی‌شود و هیچ اقدامی انجام نمی‌گیرد.</string>
+    <string name="voice_auto_send">بعد از ضبط، خودکار بفرست</string>
+    <string name="speech_preparing">صدای %1$s در حال آماده شدن است…</string>
+    <string name="status_preparing">آماده‌سازی صدا</string>
+    <string name="status_thinking">در حال فکر کردن</string>
     <string name="voice_start">🎙 حرف بزن</string>
     <string name="voice_stop">پایان ضبط</string>
     <string name="voice_cancel">لغو</string>
