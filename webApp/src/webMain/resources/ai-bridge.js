@@ -43,12 +43,15 @@
     { id: 'dons-vocal-alt', url: '/audio/mafia-dons-gambit-vocal-alt.mp3', canStart: false, weight: 12 },
     { id: 'dons-vocal-rare', url: '/audio/mafia-dons-gambit-vocal-rare.mp3', canStart: false, weight: 2 },
   ]);
+  // The vocal cut is the guaranteed second song of a session, not a draw.
+  const MUSIC_SECOND_TRACK = 'dons-vocal-alt';
   const MUSIC_MAX_BYTES = 8 * 1024 * 1024;
   const MUSIC_PREFERENCE_KEY = 'mafia.music.enabled.v1';
   let musicEnabled = readPreference(MUSIC_PREFERENCE_KEY), musicVolume = 0.25, musicActive = false, musicError = null;
   let musicContext = null, musicGain = null, musicBuffer = null, musicSource = null, musicTrack = null;
   let musicEpoch = 0, musicJob = null, musicOffset = 0, musicStartedAt = 0;
   let musicPageHidden = false, musicGestureAt = -Infinity, musicGestureSeen = false, speechPlaybackEntry = null;
+  let musicTracksChosen = 0;
   const EFFECTS_PREFERENCE_KEY = 'mafia.effects.enabled.v1';
   const EFFECT_CUES = new Set(['game_start', 'daybreak', 'nightfall', 'vote_open', 'vote_tied',
     'eliminated', 'night_killed', 'night_saved', 'town_win', 'mafia_win']);
@@ -600,10 +603,17 @@
   }
 
   function selectMusicTrack(initial = false) {
-    const candidates = initial || !musicTrack
+    const opening = initial || !musicTrack;
+    const candidates = opening
       ? MUSIC_TRACKS.filter(track => track.canStart)
       : MUSIC_TRACKS.filter(track => track.id !== musicTrack.id);
-    musicTrack = weightedMusicChoice(candidates);
+    // The vocal version always follows the opening track, so a listener who
+    // stays past the first song reliably hears it instead of waiting on a
+    // weighted draw. The rarer vocal cut stays an occasional surprise.
+    const second = !opening && musicTracksChosen === 1
+      && candidates.find(track => track.id === MUSIC_SECOND_TRACK);
+    musicTrack = second || weightedMusicChoice(candidates);
+    musicTracksChosen = opening ? 1 : musicTracksChosen + 1;
     return musicTrack;
   }
 
@@ -1413,6 +1423,10 @@
         activeTutorial.onAudioGesture();
         activeTutorial.onAudioGesture = null;
       }
+      // A blocked start is exactly what a later real gesture can fix. Without
+      // this, one transient MUSIC_BLOCKED silences music for the rest of the
+      // session until the player opens the sound menu and toggles the switch.
+      if (musicError === 'MUSIC_BLOCKED' && musicEnabled) musicError = null;
       unlockMusic(true);
       unlockEffects(true);
       if (musicCanPlay()) syncMusic();
