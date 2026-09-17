@@ -760,7 +760,8 @@ private fun DeathAnnouncementOverlay(
         Image(painterResource(Res.drawable.icon), null, Modifier.size(150.dp).clip(RoundedCornerShape(30.dp)))
         FText(roleName(game.human.role), size = 42, weight = FontWeight.ExtraBold, color = if (game.human.role.isMafiaTeam) Crimson else Gold)
         FText(roleDescription(game.human.role), Modifier.widthIn(max = 480.dp), size = 17, align = TextAlign.Center)
-        if (game.human.role.isMafiaTeam) {
+        if (game.human.role.isMafiaTeam && !GameEngine.knowsTeammates(game)) FText(tr(Res.string.teammate_unknown), Modifier.widthIn(max = 480.dp), size = 14, color = Crimson, align = TextAlign.Center)
+        if (game.human.role.isMafiaTeam && GameEngine.knowsTeammates(game)) {
             val mate = game.players.single { it.role.isMafiaTeam && !it.isHuman }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Avatar(mate.character, 52)
@@ -911,7 +912,9 @@ private fun visibleTablePlayers(game: Game, narrationId: String?): List<Player> 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             FText(roleName(game.human.role), color = Gold, size = 22, weight = FontWeight.Bold)
             FText(roleDescription(game.human.role), size = 13)
-            if (game.human.role.isMafiaTeam) FText(tr(Res.string.teammate, game.players.single { it.role.isMafiaTeam && !it.isHuman }.character.name), color = Crimson)
+            if (game.human.role.isMafiaTeam) FText(
+                if (GameEngine.knowsTeammates(game)) tr(Res.string.teammate, game.players.single { it.role.isMafiaTeam && !it.isHuman }.character.name)
+                else tr(Res.string.teammate_unknown), color = Crimson, size = 13)
             if (game.human.role == Role.DETECTIVE) {
                 val history = game.investigations[game.human.id].orEmpty()
                 if (history.isEmpty()) FText(tr(Res.string.private_empty), size = 12, color = Muted)

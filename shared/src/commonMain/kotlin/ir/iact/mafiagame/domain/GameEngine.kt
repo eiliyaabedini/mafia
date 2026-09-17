@@ -12,6 +12,12 @@ object GameEngine {
     fun clearsThreshold(votes: Int, living: Int) = votes * 5 > living * 2
     /** Day one is introductions only: a single round, no vote, and a meeting night. */
     fun passesFor(day: Int) = if (day == 1) 1 else DISCUSSION_PASSES
+    /**
+     * Mafia meet during the first night, so on the introduction day neither of
+     * them knows who the other is. A Mafia may target their own partner on day
+     * one and have to back out of it later, which is the point of the format.
+     */
+    fun knowsTeammates(game: Game) = game.day > 1 || game.phase == Phase.DAWN
 
     fun newGame(seed: Int = Random.nextInt(), characters: List<CharacterProfile> = Characters.all, humanName: String = "بازیکن مهمان"): Game {
         require(characters.size == 6 && characters.map { it.id }.distinct().size == 6)
@@ -63,7 +69,7 @@ object GameEngine {
         require(player.isAlive && !player.isHuman)
         return AgentContext(
             player.id, player.character, player.role,
-            if (player.role.isMafiaTeam) game.players.filter { it.role.isMafiaTeam && it.id != playerId }.map { it.id } else emptyList(),
+            if (player.role.isMafiaTeam && knowsTeammates(game)) game.players.filter { it.role.isMafiaTeam && it.id != playerId }.map { it.id } else emptyList(),
             if (player.role == Role.DETECTIVE) game.investigations[playerId].orEmpty() else emptyList(),
             game.beliefs[playerId] ?: AgentBeliefs(),
             game.players.map { PublicPlayer(it.id, it.character.name, it.isAlive, isHuman = it.isHuman) },

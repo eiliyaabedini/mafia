@@ -29,6 +29,7 @@
     <string name="day_label">روز %1$s</string>
     <string name="night_label">شب %1$s</string>
     <string name="alive_label">%1$s نفر در بازی</string>
+    <string name="teammate_unknown">هنوز نمی‌دانی یار مافیایت کیست. امشب، در شب معارفه، همدیگر را می‌شناسید.</string>
     <string name="role_godfather">رئیس مافیا</string>
     <string name="desc_godfather">تو رئیس مافیا هستی. با مافیای دیگر هر شب یک نفر را انتخاب می‌کنید. اگر کارآگاه تو را استعلام بگیرد، جواب «مافیا نیست» می‌گیرد.</string>
     <string name="intro_night_event">شب معارفه. مافیاها یکدیگر را شناختند. امشب کسی کشته نمی‌شود و هیچ اقدامی انجام نمی‌گیرد.</string>

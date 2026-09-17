@@ -187,6 +187,26 @@ class GameRulesTest {
     }
 
     @Test
+    fun mafiaDoNotKnowEachOtherUntilTheMeetingNight() {
+        var game = start(11)
+        assertEquals(1, game.day)
+        assertFalse(GameEngine.knowsTeammates(game))
+        game.players.filter { it.role.isMafiaTeam && !it.isHuman }.forEach { player ->
+            assertEquals(emptyList(), GameEngine.contextFor(game, player.id).teammates,
+                "a Mafia must not know their partner on the introduction day")
+        }
+        game = runDiscussion(game)
+        // The meeting night has now happened.
+        assertEquals(Phase.DAWN, game.phase)
+        assertTrue(GameEngine.knowsTeammates(game))
+        game = GameEngine.beginDay(game)
+        game.players.filter { it.role.isMafiaTeam && !it.isHuman }.forEach { player ->
+            val mate = game.players.single { it.role.isMafiaTeam && it.id != player.id }
+            assertEquals(listOf(mate.id), GameEngine.contextFor(game, player.id).teammates)
+        }
+    }
+
+    @Test
     fun theGodfatherAndMafiaShareTeammatesAndNightTargets() {
         val game = nightOfDayTwo(11)
         val godfather = game.players.single { it.role == Role.GODFATHER }
