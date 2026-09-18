@@ -534,7 +534,7 @@ private fun DeathAnnouncementOverlay(
 
 @Composable private fun Lobby(controller: GameController, compact: Boolean, start: () -> Unit, editName: () -> Unit, openSaves: () -> Unit) {
     LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(if (compact) 18.dp else 24.dp), contentPadding = PaddingValues(bottom = 32.dp)) {
-        controller.error?.let { code -> item { ErrorPanel(code, controller::retryLobbyOperation) } }
+        controller.error?.let { code -> item { ErrorPanel(code, controller::retryLobbyOperation, lobby = true) } }
         item {
             Box(Modifier.fillMaxWidth().heightIn(min = if (compact) 260.dp else 340.dp).clip(RoundedCornerShape(24.dp)).border(1.dp, Line, RoundedCornerShape(24.dp))) {
                 Image(painterResource(Res.drawable.room), null, Modifier.matchParentSize(), contentScale = ContentScale.Crop)
@@ -1204,9 +1204,13 @@ private enum class CardActivity { NONE, WAITING, SPEAKING }
         FText(message, Modifier.weight(1f), size = 13, color = Muted)
     }
 }
-@Composable private fun ErrorPanel(code: String, retry: () -> Unit) {
+/** Codes meaning AI Pass never answered, as opposed to answering with a refusal. */
+private val unreachableCodes = setOf("TIMEOUT", "NETWORK", "SDK_UNAVAILABLE")
+
+@Composable private fun ErrorPanel(code: String, retry: () -> Unit, lobby: Boolean = false) {
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color(0xFF30201F)).padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-        FText(errorText(code), size = 13, color = Paper)
+        // In the lobby there is no turn to preserve; say what the player can actually do.
+        FText(if (lobby && code in unreachableCodes) tr(Res.string.error_lobby_unreachable) else errorText(code), size = 13, color = Paper)
         TextButton(retry) { FText(tr(Res.string.retry), color = Gold) }
     }
 }
