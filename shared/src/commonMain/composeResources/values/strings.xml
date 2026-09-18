@@ -138,7 +138,7 @@
     <string name="table_privacy">نقش‌ها تا پایان بازی پنهان می‌مانند. سرنخ‌ها را در حرف‌ها پیدا کن.</string>
     <string name="latest_messages">آخرین حرف‌های میز ↓</string>
     <string name="select_player">یک نفر را انتخاب کن</string>
-    <string name="error_lobby_unreachable">ای‌آی‌پس جواب نداد، پس بازی شروع نشد. اینترنتت را بررسی کن. اگر فیلترشکن روشن است، سرورش را عوض کن یا یک بار خاموشش کن و دوباره تلاش کن.</string>
+    <string name="error_lobby_unreachable">ای‌آی‌پس جواب نداد، پس بازی شروع نشد. اگر فیلترشکن (مثل V2Ray) روشن است، خاموشش کن و دوباره تلاش کن؛ این بازی از ایران معمولاً بدون فیلترشکن کار می‌کند. اگر باز هم نشد، اینترنتت را بررسی کن.</string>
     <string name="error_timeout">زمان انتظار برای پاسخ تمام شد. نوبت فعلی سر جایش مانده است؛ می‌توانی دوباره تلاش کنی.</string>
     <string name="audio_title">صدای هم‌بازی‌ها</string>
     <string name="audio_default_off">فعلاً بی‌صدا؛ روشن‌کردنش با توست.</string>
